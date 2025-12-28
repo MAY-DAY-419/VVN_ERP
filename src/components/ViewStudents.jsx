@@ -22,7 +22,6 @@ function ViewStudents() {
       const { data, error } = await supabase
         .from('students')
         .select('*')
-        .order('rollnumber')
 
       if (error) throw error
 
@@ -103,20 +102,20 @@ function ViewStudents() {
 
                 return (
                   <tr key={student.id}>
-                    <td>{student.rollnumber}</td>
-                    <td>{student.fullname}</td>
+                    <td>{student.rollnumber || student.rollNumber}</td>
+                    <td>{student.fullname || student.fullName}</td>
                     <td>{student.class} / {student.division}</td>
-                    <td>{student.fathername || student.mothername || '—'}</td>
-                    <td>{student.contactnumber}</td>
+                    <td>{student.fathername || student.fatherName || student.mothername || student.motherName || '—'}</td>
+                    <td>{student.contactnumber || student.contactNumber}</td>
                     <td>{student.village}</td>
                     <td>
-                      <span className={`badge badge-${student.admissiontype.toLowerCase()}`}>
-                        {student.admissiontype}
+                      <span className={`badge badge-${(student.admissiontype || student.admissionType).toLowerCase()}`}>
+                        {student.admissiontype || student.admissionType}
                       </span>
                     </td>
                     <td>
-                      <span className={`badge badge-${student.vanapplied.toLowerCase()}`}>
-                        {student.vanapplied}
+                      <span className={`badge badge-${(student.vanapplied || student.vanApplied).toLowerCase()}`}>
+                        {student.vanapplied || student.vanApplied}
                       </span>
                     </td>
                     <td>

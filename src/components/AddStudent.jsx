@@ -141,9 +141,52 @@ function AddStudent() {
       dataToSubmit.vancharges = parseFloat(dataToSubmit.vancharges || 0)
       dataToSubmit.totalfees = (dataToSubmit.fees || 0) + (dataToSubmit.vancharges || 0)
 
+      // Map to match camelCase DB schema while keeping lowercase keys for compatibility
+      const dbRecord = {
+        // camelCase keys
+        fullName: dataToSubmit.fullname,
+        rollNumber: dataToSubmit.rollnumber,
+        dob: dataToSubmit.dob,
+        placeOfBirth: dataToSubmit.placeofbirth,
+        gender: dataToSubmit.gender,
+        category: dataToSubmit.category,
+        medium: dataToSubmit.medium,
+        class: dataToSubmit.class,
+        division: dataToSubmit.division,
+        fatherName: dataToSubmit.fathername || null,
+        motherName: dataToSubmit.mothername || null,
+        parentName: dataToSubmit.parentname || null,
+        contactNumber: dataToSubmit.contactnumber,
+        emergencyContact: dataToSubmit.emergencycontact || null,
+        address: dataToSubmit.address,
+        village: dataToSubmit.village,
+        state: dataToSubmit.state,
+        district: dataToSubmit.district,
+        admissionType: dataToSubmit.admissiontype,
+        admissionDate: dataToSubmit.admissiondate,
+        vanApplied: dataToSubmit.vanapplied,
+        fees: dataToSubmit.fees,
+        vanCharges: dataToSubmit.vancharges,
+        totalFees: dataToSubmit.totalfees,
+        // duplicate lowercase keys (ignored if not in schema)
+        fullname: dataToSubmit.fullname,
+        rollnumber: dataToSubmit.rollnumber,
+        placeofbirth: dataToSubmit.placeofbirth,
+        fathername: dataToSubmit.fathername,
+        mothername: dataToSubmit.mothername,
+        parentname: dataToSubmit.parentname,
+        contactnumber: dataToSubmit.contactnumber,
+        emergencycontact: dataToSubmit.emergencycontact,
+        admissiontype: dataToSubmit.admissiontype,
+        admissiondate: dataToSubmit.admissiondate,
+        vanapplied: dataToSubmit.vanapplied,
+        vancharges: dataToSubmit.vancharges,
+        totalfees: dataToSubmit.totalfees
+      }
+
       const { data, error } = await supabase
         .from('students')
-        .insert([dataToSubmit])
+        .insert([dbRecord])
 
       if (error) {
         console.error('Supabase insert error:', error)
