@@ -15,29 +15,41 @@ function App() {
 
   // Check authentication on mount
   useEffect(() => {
-    const token = localStorage.getItem('vvn_auth_token')
-    const userId = localStorage.getItem('vvn_user_id')
-    
-    if (token && userId) {
-      setIsAuthenticated(true)
-    } else {
-      navigate('/login')
+    try {
+      const token = localStorage.getItem('vvn_auth_token')
+      const userId = localStorage.getItem('vvn_user_id')
+      
+      if (token && userId) {
+        setIsAuthenticated(true)
+      } else {
+        setIsAuthenticated(false)
+        navigate('/login', { replace: true })
+      }
+    } catch (error) {
+      console.error('Auth check error:', error)
+      setIsAuthenticated(false)
+      navigate('/login', { replace: true })
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }, [navigate])
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true)
-    navigate('/')
+    navigate('/', { replace: true })
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('vvn_auth_token')
-    localStorage.removeItem('vvn_user_id')
-    localStorage.removeItem('vvn_login_time')
+    try {
+      localStorage.removeItem('vvn_auth_token')
+      localStorage.removeItem('vvn_user_id')
+      localStorage.removeItem('vvn_login_time')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
     setIsAuthenticated(false)
     setActiveTab('dashboard')
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
 
   if (loading) {
@@ -55,7 +67,7 @@ function App() {
               <header className="header">
                 <div className="header-content">
                   <div className="logo-container">
-                    <img src="/logo.jpeg" alt="VVN Logo" className="logo" />
+                    <img src="/logo.jpeg" alt="VVN Logo" className="logo" loading="lazy" />
                     <div>
                       <h1>🎓 VIPIN VIDHYA NIKETAN</h1>
                       <p>Student Management System</p>
