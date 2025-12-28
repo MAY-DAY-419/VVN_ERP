@@ -59,13 +59,13 @@ function Login({ onLoginSuccess }) {
       {/* Watermark Background */}
       <div className="watermark-bg">
         <div className="watermark-logo">
-          <img src="/Assets/logo.jpeg" alt="VVN Logo" className="watermark-img" />
+          <img src="/logo.jpeg" alt="VVN Logo" className="watermark-img" />
         </div>
       </div>
 
       <div className="login-box">
         <div className="login-header">
-          <img src="/Assets/logo.jpeg" alt="VIPIN VIDHYA NIKETAN" className="login-logo" />
+          <img src="/logo.jpeg" alt="VIPIN VIDHYA NIKETAN" className="login-logo" />
           <h1>VIPIN VIDHYA NIKETAN</h1>
           <p>Student Management System</p>
         </div>
