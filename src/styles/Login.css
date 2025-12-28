@@ -1,0 +1,306 @@
+/* Login Page Styling */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7a22e3 100%);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Watermark Background */
+.watermark-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Add VVN text watermarks */
+.watermark-bg::before {
+  content: 'VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN VVN';
+  position: absolute;
+  font-size: 80px;
+  font-weight: 900;
+  color: white;
+  word-spacing: 100px;
+  line-height: 180px;
+  transform: rotate(-45deg);
+  white-space: pre-wrap;
+  width: 200%;
+  text-align: center;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.watermark-logo {
+  width: 400px;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.watermark-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(100%);
+}
+
+/* Login Box */
+.login-box {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 60px 50px;
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Login Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.login-header h1 {
+  font-size: 28px;
+  color: #1e3c72;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.login-header p {
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0 0 0;
+  font-weight: 500;
+}
+
+/* Form Groups */
+.login-form .form-group {
+  margin-bottom: 24px;
+}
+
+.login-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: #f9f9f9;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #1e3c72;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(30, 60, 114, 0.1);
+}
+
+.login-form input:disabled {
+  background: #f0f0f0;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Error Message */
+.error-message {
+  background: #fee;
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c33;
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-10px);
+  }
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+/* Login Button */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(30, 60, 114, 0.3);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Login Footer */
+.login-footer {
+  text-align: center;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  margin-top: 20px;
+}
+
+.login-footer p {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+/* Bottom Watermark */
+.watermark-footer {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.watermark-footer p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .login-container {
+    padding: 15px;
+  }
+
+  .login-box {
+    padding: 35px 25px;
+    border-radius: 15px;
+    max-width: 100%;
+  }
+
+  .login-header h1 {
+    font-size: 22px;
+  }
+
+  .login-header p {
+    font-size: 13px;
+  }
+
+  .login-logo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .login-form input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+
+  .login-btn {
+    padding: 13px;
+    font-size: 15px;
+  }
+
+  .watermark-bg {
+    opacity: 0.05;
+  }
+
+  .watermark-bg::before {
+    font-size: 60px;
+    word-spacing: 80px;
+    line-height: 140px;
+  }
+
+  .watermark-logo {
+    width: 200px;
+    height: 200px;
+  }
+
+  .watermark-footer p {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 400px) {
+  .login-box {
+    padding: 30px 20px;
+  }
+
+  .login-header h1 {
+    font-size: 20px;
+  }
+
+  .login-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
