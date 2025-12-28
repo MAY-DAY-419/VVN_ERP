@@ -141,45 +141,30 @@ function AddStudent() {
       dataToSubmit.vancharges = parseFloat(dataToSubmit.vancharges || 0)
       dataToSubmit.totalfees = (dataToSubmit.fees || 0) + (dataToSubmit.vancharges || 0)
 
-      // Map to match camelCase DB schema while keeping lowercase keys for compatibility
+      // Insert using lowercase column names to match the existing table
       const dbRecord = {
-        // camelCase keys
-        fullName: dataToSubmit.fullname,
-        rollNumber: dataToSubmit.rollnumber,
+        fullname: dataToSubmit.fullname,
+        rollnumber: dataToSubmit.rollnumber,
         dob: dataToSubmit.dob,
-        placeOfBirth: dataToSubmit.placeofbirth,
+        placeofbirth: dataToSubmit.placeofbirth,
         gender: dataToSubmit.gender,
         category: dataToSubmit.category,
         medium: dataToSubmit.medium,
         class: dataToSubmit.class,
         division: dataToSubmit.division,
-        fatherName: dataToSubmit.fathername || null,
-        motherName: dataToSubmit.mothername || null,
-        parentName: dataToSubmit.parentname || null,
-        contactNumber: dataToSubmit.contactnumber,
-        emergencyContact: dataToSubmit.emergencycontact || null,
+        fathername: dataToSubmit.fathername || null,
+        mothername: dataToSubmit.mothername || null,
+        parentname: dataToSubmit.parentname || null,
+        contactnumber: dataToSubmit.contactnumber,
+        emergencycontact: dataToSubmit.emergencycontact || null,
         address: dataToSubmit.address,
         village: dataToSubmit.village,
         state: dataToSubmit.state,
         district: dataToSubmit.district,
-        admissionType: dataToSubmit.admissiontype,
-        admissionDate: dataToSubmit.admissiondate,
-        vanApplied: dataToSubmit.vanapplied,
-        fees: dataToSubmit.fees,
-        vanCharges: dataToSubmit.vancharges,
-        totalFees: dataToSubmit.totalfees,
-        // duplicate lowercase keys (ignored if not in schema)
-        fullname: dataToSubmit.fullname,
-        rollnumber: dataToSubmit.rollnumber,
-        placeofbirth: dataToSubmit.placeofbirth,
-        fathername: dataToSubmit.fathername,
-        mothername: dataToSubmit.mothername,
-        parentname: dataToSubmit.parentname,
-        contactnumber: dataToSubmit.contactnumber,
-        emergencycontact: dataToSubmit.emergencycontact,
         admissiontype: dataToSubmit.admissiontype,
         admissiondate: dataToSubmit.admissiondate,
         vanapplied: dataToSubmit.vanapplied,
+        fees: dataToSubmit.fees,
         vancharges: dataToSubmit.vancharges,
         totalfees: dataToSubmit.totalfees
       }
