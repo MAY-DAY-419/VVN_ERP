@@ -19,6 +19,8 @@ function App() {
       const token = localStorage.getItem('vvn_auth_token')
       const userId = localStorage.getItem('vvn_user_id')
       
+      console.log('Auth check - Token:', !!token, 'UserId:', !!userId)
+      
       if (token && userId) {
         setIsAuthenticated(true)
       } else {
