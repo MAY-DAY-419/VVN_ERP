@@ -14,6 +14,11 @@ function ViewStudents() {
 
   const loadStudents = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase not configured. Skipping students load.')
+        setLoading(false)
+        return
+      }
       const { data, error } = await supabase
         .from('students')
         .select('*')

@@ -10,6 +10,9 @@ let supabase = null
 
 if (supabaseUrl && supabaseKey) {
   try {
+    if (!supabaseKey.startsWith('ey')) {
+      console.warn('Supabase key format looks unusual. The anon key typically starts with "ey". Ensure you used the Anon Public Key from Supabase Settings → API.')
+    }
     supabase = createClient(supabaseUrl, supabaseKey)
     console.log('Supabase client initialized successfully')
   } catch (error) {

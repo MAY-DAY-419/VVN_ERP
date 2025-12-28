@@ -15,6 +15,11 @@ function Dashboard() {
 
   const loadDashboard = async () => {
     try {
+      if (!supabase) {
+        console.error('Supabase not configured. Skipping dashboard load.')
+        setLoading(false)
+        return
+      }
       const { data: students, error } = await supabase
         .from('students')
         .select('*')

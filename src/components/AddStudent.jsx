@@ -119,6 +119,13 @@ function AddStudent() {
     e.preventDefault()
     
     try {
+      // Guard: Supabase must be configured
+      if (!supabase) {
+        setMessage({ type: 'error', text: '❌ Error: Supabase not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_KEY in Vercel → Project Settings → Environment Variables, then redeploy.' })
+        setTimeout(() => setMessage(null), 6000)
+        return
+      }
+
       const dataToSubmit = {
         ...formData,
         village: formData.village === 'Other' ? formData.otherVillage : formData.village
@@ -192,7 +199,7 @@ function AddStudent() {
 
   async function generateStudentPdf(s) {
     const doc = new jsPDF()
-    const logo = await getBase64ImageFromUrl('/Assets/logo.jpeg')
+    const logo = await getBase64ImageFromUrl('/logo.jpeg')
 
     // Header
     if (logo) {
