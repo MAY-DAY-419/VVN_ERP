@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import * as XLSX from 'xlsx'
-import { supabase } from '../supabaseClient'
+import { supabase, supabaseReady } from '../supabaseClient'
 
 function ViewStudents() {
   const [students, setStudents] = useState([])
@@ -14,7 +14,7 @@ function ViewStudents() {
 
   const loadStudents = async () => {
     try {
-      if (!supabase) {
+      if (!supabaseReady) {
         console.error('Supabase not configured. Skipping students load.')
         setLoading(false)
         return

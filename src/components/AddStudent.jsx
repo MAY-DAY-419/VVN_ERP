@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { jsPDF } from 'jspdf'
-import { supabase } from '../supabaseClient'
+import { supabase, supabaseReady, invalidKeyReason } from '../supabaseClient'
 
 const villages = [
   'Konhar', 'Dhanoli', 'Parrawan', 'Madanpur', 'Palia', 
@@ -119,9 +119,10 @@ function AddStudent() {
     e.preventDefault()
     
     try {
-      // Guard: Supabase must be configured
-      if (!supabase) {
-        setMessage({ type: 'error', text: '❌ Error: Supabase not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_KEY in Vercel → Project Settings → Environment Variables, then redeploy.' })
+      // Guard: Supabase must be configured and key valid
+      if (!supabaseReady) {
+        const reason = invalidKeyReason ? ` (${invalidKeyReason})` : ''
+        setMessage({ type: 'error', text: `❌ Error: Supabase not configured or invalid key${reason}. Set VITE_SUPABASE_URL and VITE_SUPABASE_KEY (Anon Public Key) in Vercel → Project Settings → Environment Variables, then redeploy.` })
         setTimeout(() => setMessage(null), 6000)
         return
       }
@@ -144,7 +145,10 @@ function AddStudent() {
         .from('students')
         .insert([dataToSubmit])
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase insert error:', error)
+        throw new Error(`${error.message || 'Insert failed'}${error.code ? ` (code: ${error.code})` : ''}`)
+      }
 
       setMessage({ type: 'success', text: '🎉 Congratulations! Student added successfully. Generating PDF...' })
 

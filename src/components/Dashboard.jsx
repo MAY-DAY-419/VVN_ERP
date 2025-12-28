@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
+import { supabase, supabaseReady } from '../supabaseClient'
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -15,7 +15,7 @@ function Dashboard() {
 
   const loadDashboard = async () => {
     try {
-      if (!supabase) {
+      if (!supabaseReady) {
         console.error('Supabase not configured. Skipping dashboard load.')
         setLoading(false)
         return
