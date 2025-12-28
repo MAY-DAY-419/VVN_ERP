@@ -55,7 +55,7 @@ function App() {
               <header className="header">
                 <div className="header-content">
                   <div className="logo-container">
-                    <img src="/Assets/logo.jpeg" alt="VVN Logo" className="logo" />
+                    <img src="/logo.jpeg" alt="VVN Logo" className="logo" />
                     <div>
                       <h1>🎓 VIPIN VIDHYA NIKETAN</h1>
                       <p>Student Management System</p>
