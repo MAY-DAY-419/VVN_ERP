@@ -75,7 +75,9 @@ function AddStudent() {
     vanapplied: '',
     vancharges: '',
     fees: 0,
-    totalfees: 0
+    totalfees: 0,
+    feewaiver: 'No',
+    feewaiveramt: 0
   })
 
   const handleChange = (e) => {
@@ -110,8 +112,25 @@ function AddStudent() {
 
     if (name === 'vancharges') {
       const vanChargesNum = parseFloat(value || 0)
-      const totalfees = (formData.fees || 0) + (isNaN(vanChargesNum) ? 0 : vanChargesNum)
+      const waiverAmt = parseFloat(formData.feewaiveramt || 0)
+      const baseFees = (formData.fees || 0) + (isNaN(vanChargesNum) ? 0 : vanChargesNum)
+      const totalfees = baseFees - (isNaN(waiverAmt) ? 0 : waiverAmt)
       setFormData(prev => ({ ...prev, totalfees }))
+    }
+
+    if (name === 'feewaiveramt') {
+      const waiverAmt = parseFloat(value || 0)
+      const baseFees = (formData.fees || 0) + (formData.vancharges ? parseFloat(formData.vancharges) : 0)
+      const totalfees = baseFees - (isNaN(waiverAmt) ? 0 : waiverAmt)
+      setFormData(prev => ({ ...prev, feewaiveramt: waiverAmt, totalfees }))
+    }
+
+    if (name === 'feewaiver') {
+      // If fee waiver set to No, clear the amount
+      if (value !== 'Yes') {
+        const baseFees = (formData.fees || 0) + (formData.vancharges ? parseFloat(formData.vancharges) : 0)
+        setFormData(prev => ({ ...prev, feewaiver: value, feewaiveramt: 0, totalfees: baseFees }))
+      }
     }
   }
 
@@ -166,7 +185,9 @@ function AddStudent() {
         vanapplied: dataToSubmit.vanapplied,
         fees: dataToSubmit.fees,
         vancharges: dataToSubmit.vancharges,
-        totalfees: dataToSubmit.totalfees
+        totalfees: dataToSubmit.totalfees,
+        feewaiver: dataToSubmit.feewaiver,
+        feewaiveramt: dataToSubmit.feewaiveramt || 0
       }
 
       const { data, error } = await supabase
@@ -207,7 +228,9 @@ function AddStudent() {
         vanapplied: '',
         vancharges: '',
         fees: 0,
-        totalfees: 0
+        totalfees: 0,
+        feewaiver: 'No',
+        feewaiveramt: 0
       })
       setShowOtherVillage(false)
       setDisplayedFees(null)
@@ -281,8 +304,30 @@ function AddStudent() {
     y += 6
     doc.text(`Van Fees: ₹${s.vancharges}`, 20, y)
     y += 6
+    const subtotal = (s.fees || 0) + (s.vancharges || 0)
+    doc.text(`Subtotal: ₹${subtotal}`, 20, y)
+    y += 6
+    
+    // Fee Waiver Amount
+    if (s.feewaiver === 'Yes' && s.feewaiveramt > 0) {
+      doc.setTextColor(211, 47, 47) // Red color
+      doc.text(`Fee Waiver (-): ₹${s.feewaiveramt}`, 20, y)
+      doc.setTextColor(0, 0, 0) // Reset to black
+      y += 6
+    }
+    
     doc.setFontSize(12)
-    doc.text(`Total Fees: ₹${s.totalfees}`, 20, y)
+    doc.text(`Final Total Fees: ₹${s.totalfees}`, 20, y)
+    y += 8
+    
+    // Fee Waiver Status
+    if (s.feewaiver === 'Yes') {
+      doc.setFontSize(11)
+      doc.setTextColor(211, 47, 47) // Red color for waiver
+      doc.text('⚠️ FEE WAIVER: YES (Admin decision pending)', 20, y)
+      doc.setTextColor(0, 0, 0) // Reset to black
+      y += 6
+    }
 
     // Footer / Stamp placeholder
     doc.setFontSize(10)
@@ -622,8 +667,16 @@ function AddStudent() {
               <div>
                 <strong>Van Fees:</strong> ₹{parseFloat(formData.vancharges || 0)}
               </div>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <strong>Subtotal:</strong> ₹{(formData.fees || 0) + parseFloat(formData.vancharges || 0)}
+              </div>
+              {formData.feewaiver === 'Yes' && formData.feewaiveramt > 0 && (
+                <div style={{ gridColumn: '1 / -1', color: '#d32f2f' }}>
+                  <strong>Fee Waiver (-):</strong> ₹{formData.feewaiveramt}
+                </div>
+              )}
               <div style={{ gridColumn: '1 / -1', fontSize: '1.2em', fontWeight: 'bold', color: '#2e7d32' }}>
-                Total Fees: ₹{(formData.totalfees || 0)}
+                Final Total Fees: ₹{(formData.totalfees || 0)}
               </div>
             </div>
             <p style={{ textAlign: 'center', color: '#666', marginTop: '10px' }}>
@@ -631,6 +684,45 @@ function AddStudent() {
             </p>
           </div>
         )}
+
+        <div className="form-section">
+          <h3>🛡️ Fee Waiver (Admin Only)</h3>
+          <div className="form-group">
+            <label>Grant Fee Waiver *</label>
+            <select
+              name="feewaiver"
+              value={formData.feewaiver}
+              onChange={handleChange}
+              required
+            >
+              <option value="No">No</option>
+              <option value="Yes">Yes (Full/Partial waiver to be decided by admin)</option>
+            </select>
+            {formData.feewaiver === 'Yes' && (
+              <p style={{ color: '#d32f2f', marginTop: '8px', fontSize: '0.9em' }}>
+                ⚠️ Note: Admin has marked this student for fee waiver consideration.
+              </p>
+            )}
+          </div>
+          {formData.feewaiver === 'Yes' && (
+            <div className="form-group">
+              <label>Fee Waiver Amount (₹) *</label>
+              <input
+                type="number"
+                name="feewaiveramt"
+                value={formData.feewaiveramt}
+                onChange={handleChange}
+                min="0"
+                step="1"
+                required
+                placeholder="Enter amount to be waived in ₹"
+              />
+              <small style={{ color: '#666', display: 'block', marginTop: '5px' }}>
+                This amount will be deducted from the total fees.
+              </small>
+            </div>
+          )}
+        </div>
 
         <button type="submit" className="btn">Add Student</button>
       </form>

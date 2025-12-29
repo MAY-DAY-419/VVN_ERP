@@ -92,6 +92,7 @@ function ViewStudents() {
                 <th>Village</th>
                 <th>Admission</th>
                 <th>Van</th>
+                <th>Fee Waiver</th>
                 <th>Siblings</th>
               </tr>
             </thead>
@@ -117,6 +118,21 @@ function ViewStudents() {
                       <span className={`badge badge-${(student.vanapplied || student.vanApplied).toLowerCase()}`}>
                         {student.vanapplied || student.vanApplied}
                       </span>
+                    </td>
+                    <td>
+                      {(student.feewaiver === 'Yes') ? (
+                        <div>
+                          <span style={{ backgroundColor: '#fff3cd', color: '#856404', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+                            ⚠️ Yes
+                          </span>
+                          <br />
+                          <small style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                            ₹{student.feewaiveramt || 0} waived
+                          </small>
+                        </div>
+                      ) : (
+                        <span style={{ color: '#6c757d' }}>No</span>
+                      )}
                     </td>
                     <td>
                       {hasSiblings ? (
