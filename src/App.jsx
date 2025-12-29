@@ -3,6 +3,9 @@ import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import AddStudent from './components/AddStudent'
 import ViewStudents from './components/ViewStudents'
+import FeeDetail from './components/FeeDetail'
+import EditStudent from './components/EditStudent'
+import Staff from './components/Staff'
 import Login from './components/Login'
 import InstallPrompt from './components/InstallPrompt'
 import './App.css'
@@ -101,6 +104,27 @@ function App() {
                 >
                   👥 View Students
                 </Link>
+                <Link 
+                  to="/fee-detail" 
+                  className={`nav-btn ${activeTab === 'fees' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('fees')}
+                >
+                  💳 Fees Detail
+                </Link>
+                <Link 
+                  to="/edit-student" 
+                  className={`nav-btn ${activeTab === 'edit' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('edit')}
+                >
+                  ✏️ Edit Student
+                </Link>
+                <Link 
+                  to="/staff" 
+                  className={`nav-btn ${activeTab === 'staff' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('staff')}
+                >
+                  👨‍💼 Staff
+                </Link>
               </nav>
 
               <main className="main-content">
@@ -108,6 +132,9 @@ function App() {
                   <Route path="/" element={<Dashboard />} />
                   <Route path="/add-student" element={<AddStudent />} />
                   <Route path="/view-students" element={<ViewStudents />} />
+                  <Route path="/fee-detail" element={<FeeDetail />} />
+                  <Route path="/edit-student" element={<EditStudent />} />
+                  <Route path="/staff" element={<Staff />} />
                 </Routes>
               </main>
 
