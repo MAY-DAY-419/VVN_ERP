@@ -7,6 +7,8 @@ function ViewStudents() {
   const [filteredStudents, setFilteredStudents] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedStudent, setSelectedStudent] = useState(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
 
   useEffect(() => {
     loadStudents()
@@ -39,11 +41,13 @@ function ViewStudents() {
     setSearchTerm(term)
 
     const filtered = students.filter(student =>
-      student.fullname.toLowerCase().includes(term) ||
-      student.rollnumber.toLowerCase().includes(term) ||
-      student.village.toLowerCase().includes(term) ||
+      (student.studentfullname && student.studentfullname.toLowerCase().includes(term)) ||
+      (student.formnumber && student.formnumber.toLowerCase().includes(term)) ||
+      (student.admissionnumber && student.admissionnumber.toLowerCase().includes(term)) ||
+      (student.village && student.village.toLowerCase().includes(term)) ||
       (student.fathername && student.fathername.toLowerCase().includes(term)) ||
-      student.class.toLowerCase().includes(term)
+      (student.fathermobile && student.fathermobile.includes(term)) ||
+      (student.class && student.class.toLowerCase().includes(term))
     )
 
     setFilteredStudents(filtered)
@@ -51,7 +55,7 @@ function ViewStudents() {
 
   const getSiblings = (student) => {
     return students.filter(s => 
-      s.contactnumber === student.contactnumber && s.id !== student.id
+      (s.fatherMobile === student.fatherMobile && student.fatherMobile) && s.id !== student.id
     )
   }
 
@@ -66,7 +70,7 @@ function ViewStudents() {
       <div className="search-bar">
         <input
           type="text"
-          placeholder="🔍 Search by name, roll number, class, village, or parent..."
+          placeholder="🔍 Search by name, admission no., form no., class, village, father, or mobile..."
           value={searchTerm}
           onChange={handleSearch}
         />
@@ -84,15 +88,16 @@ function ViewStudents() {
           <table className="students-table">
             <thead>
               <tr>
-                <th>Roll No</th>
+                <th>Form No</th>
+                <th>Admission No</th>
                 <th>Name</th>
-                <th>Class/Div</th>
-                <th>Guardian</th>
-                <th>Contact</th>
+                <th>Class</th>
+                <th>Father Name</th>
+                <th>Mobile</th>
                 <th>Village</th>
-                <th>Admission</th>
+                <th>Admission Date</th>
+                <th>Academic Year</th>
                 <th>Van</th>
-                <th>Fee Waiver</th>
                 <th>Siblings</th>
               </tr>
             </thead>
@@ -103,36 +108,19 @@ function ViewStudents() {
 
                 return (
                   <tr key={student.id}>
-                    <td>{student.rollnumber || student.rollNumber}</td>
-                    <td>{student.fullname || student.fullName}</td>
-                    <td>{student.class} / {student.division}</td>
-                    <td>{student.fathername || student.fatherName || student.mothername || student.motherName || '—'}</td>
-                    <td>{student.contactnumber || student.contactNumber}</td>
+                    <td>{student.formNumber || '—'}</td>
+                    <td>{student.admissionNumber || '—'}</td>
+                    <td><strong>{student.studentFullName || student.fullname || '—'}</strong></td>
+                    <td>{student.class}</td>
+                    <td>{student.fatherName || student.fathername || '—'}</td>
+                    <td>{student.fatherMobile || student.contactnumber || '—'}</td>
                     <td>{student.village}</td>
+                    <td>{student.admissionDate ? new Date(student.admissionDate).toLocaleDateString() : (student.admissiondate ? new Date(student.admissiondate).toLocaleDateString() : '—')}</td>
+                    <td>{student.academicYear || '—'}</td>
                     <td>
-                      <span className={`badge badge-${(student.admissiontype || student.admissionType).toLowerCase()}`}>
-                        {student.admissiontype || student.admissionType}
+                      <span className={`badge badge-${(student.schoolVanApplied || student.vanapplied || 'No').toLowerCase()}`}>
+                        {student.schoolVanApplied || student.vanapplied || 'No'}
                       </span>
-                    </td>
-                    <td>
-                      <span className={`badge badge-${(student.vanapplied || student.vanApplied).toLowerCase()}`}>
-                        {student.vanapplied || student.vanApplied}
-                      </span>
-                    </td>
-                    <td>
-                      {(student.feewaiver === 'Yes') ? (
-                        <div>
-                          <span style={{ backgroundColor: '#fff3cd', color: '#856404', padding: '4px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
-                            ⚠️ Yes
-                          </span>
-                          <br />
-                          <small style={{ color: '#d32f2f', fontWeight: 'bold' }}>
-                            ₹{student.feewaiveramt || 0} waived
-                          </small>
-                        </div>
-                      ) : (
-                        <span style={{ color: '#6c757d' }}>No</span>
-                      )}
                     </td>
                     <td>
                       {hasSiblings ? (
@@ -142,7 +130,7 @@ function ViewStudents() {
                           </span>
                           <br />
                           <small style={{ color: '#666' }}>
-                            {siblings.map(s => s.fullname).join(', ')}
+                            {siblings.map(s => s.studentFullName || s.fullname).join(', ')}
                           </small>
                         </>
                       ) : (

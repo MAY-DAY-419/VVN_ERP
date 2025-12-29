@@ -6,6 +6,7 @@ import ViewStudents from './components/ViewStudents'
 import FeeDetail from './components/FeeDetail'
 import EditStudent from './components/EditStudent'
 import Staff from './components/Staff'
+import Expenses from './components/Expenses'
 import Login from './components/Login'
 import InstallPrompt from './components/InstallPrompt'
 import './App.css'
@@ -125,6 +126,13 @@ function App() {
                 >
                   👨‍💼 Staff
                 </Link>
+                <Link 
+                  to="/expenses" 
+                  className={`nav-btn ${activeTab === 'expenses' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('expenses')}
+                >
+                  💰 Expenses
+                </Link>
               </nav>
 
               <main className="main-content">
@@ -135,6 +143,7 @@ function App() {
                   <Route path="/fee-detail" element={<FeeDetail />} />
                   <Route path="/edit-student" element={<EditStudent />} />
                   <Route path="/staff" element={<Staff />} />
+                  <Route path="/expenses" element={<Expenses />} />
                 </Routes>
               </main>
 

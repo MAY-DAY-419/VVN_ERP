@@ -254,6 +254,14 @@ function EditStudent() {
         feewaiveramt: dataToUpdate.feewaiveramt || 0
       }
 
+      // Convert empty enum/select fields to null (for CHECK constraints)
+      const enumFields = ['admissiontype', 'vanapplied', 'feewaiver', 'gender', 'category']
+      enumFields.forEach(field => {
+        if (dbRecord[field] === '') {
+          dbRecord[field] = null
+        }
+      })
+
       const { error } = await supabase
         .from('students')
         .update(dbRecord)
