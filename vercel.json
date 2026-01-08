@@ -1,28 +1,8 @@
 {
   "rewrites": [
-    {
-      "source": "/",
-      "destination": "/landing.html"
-    },
-    {
-      "source": "/login",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/app",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/(dashboard|add-student|view-students|fee-detail|edit-student|staff|expenses)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/(.*\\.(js|css|json|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot))",
-      "destination": "/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/", "destination": "/landing.html" },
+    { "source": "/landing", "destination": "/landing.html" },
+    { "source": "/landing.html", "destination": "/landing.html" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
