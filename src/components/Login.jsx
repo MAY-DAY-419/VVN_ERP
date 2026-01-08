@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import '../styles/Login.css'
 
 function Login({ onLoginSuccess }) {
@@ -7,22 +7,14 @@ function Login({ onLoginSuccess }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleForceLogout = () => {
+  // Clear any existing sessions on component mount
+  useEffect(() => {
     if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.clear()
-      setError('')
-      alert('Session cleared! Please login with new credentials.')
+      localStorage.removeItem('vvn_auth_token')
+      localStorage.removeItem('vvn_user_id')
+      localStorage.removeItem('vvn_login_time')
     }
-  }
-
-  // Hash function using Web Crypto API
-  async function hashPassword(pass) {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(pass)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  }
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -30,26 +22,20 @@ function Login({ onLoginSuccess }) {
     setLoading(true)
 
     try {
-      // Get credentials from environment variables (NO FALLBACK!)
+      // Get credentials from environment variables ONLY
       const correctId = import.meta.env.VITE_ADMIN_ID
       const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD
 
-      // Debug logging (remove in production)
-      console.log('Environment check:', {
-        hasId: !!correctId,
-        hasPassword: !!correctPassword,
-        idValue: correctId,
-        allEnvVars: import.meta.env
-      })
+      console.log('Auth attempt:', { hasEnvId: !!correctId, hasEnvPass: !!correctPassword })
 
       if (!correctId || !correctPassword) {
-        setError('❌ Admin credentials not configured. Contact administrator.')
+        setError('❌ System error: Credentials not configured')
         setLoading(false)
         return
       }
 
-      // Validate
-      if (id !== correctId) {
+      // Direct comparison - no hashing
+      if (id.trim() !== correctId.trim()) {
         setError('❌ Invalid ID')
         setLoading(false)
         return
@@ -61,10 +47,11 @@ function Login({ onLoginSuccess }) {
         return
       }
 
-      // Hash the password and store session
-      const hashedPassword = await hashPassword(password)
+      // Create new session token
+      const sessionToken = `vvn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
       if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem('vvn_auth_token', hashedPassword)
+        localStorage.setItem('vvn_auth_token', sessionToken)
         localStorage.setItem('vvn_user_id', id)
         localStorage.setItem('vvn_login_time', new Date().toISOString())
       }
@@ -73,7 +60,7 @@ function Login({ onLoginSuccess }) {
       setLoading(false)
       onLoginSuccess()
     } catch (err) {
-      setError('❌ Error during login: ' + err.message)
+      setError('❌ Login error: ' + err.message)
       setLoading(false)
     }
   }
@@ -125,10 +112,6 @@ function Login({ onLoginSuccess }) {
 
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? 'Logging in...' : '🔐 Login'}
-          </button>
-
-          <button type="button" className="clear-session-btn" onClick={handleForceLogout} style={{marginTop: '10px', padding: '8px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px'}}>
-            Clear Session & Logout
           </button>
         </form>
 
