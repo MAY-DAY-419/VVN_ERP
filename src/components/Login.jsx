@@ -16,6 +16,14 @@ function Login({ onLoginSuccess }) {
     }
   }, [])
 
+  const handleClearSession = () => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.clear()
+      setError('')
+      alert('Session cleared. Please log in again.')
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
@@ -112,6 +120,15 @@ function Login({ onLoginSuccess }) {
 
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? 'Logging in...' : '🔐 Login'}
+          </button>
+
+          <button
+            type="button"
+            className="clear-session-btn"
+            onClick={handleClearSession}
+            style={{ marginTop: '10px', padding: '8px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px' }}
+          >
+            Clear Session & Logout
           </button>
         </form>
 
