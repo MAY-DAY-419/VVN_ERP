@@ -34,6 +34,14 @@ function Login({ onLoginSuccess }) {
       const correctId = import.meta.env.VITE_ADMIN_ID
       const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD
 
+      // Debug logging (remove in production)
+      console.log('Environment check:', {
+        hasId: !!correctId,
+        hasPassword: !!correctPassword,
+        idValue: correctId,
+        allEnvVars: import.meta.env
+      })
+
       if (!correctId || !correctPassword) {
         setError('❌ Admin credentials not configured. Contact administrator.')
         setLoading(false)
