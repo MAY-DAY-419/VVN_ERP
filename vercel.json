@@ -5,8 +5,20 @@
       "destination": "/landing.html"
     },
     {
-      "source": "/app(.*)",
+      "source": "/login",
       "destination": "/index.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(dashboard|add-student|view-students|fee-detail|edit-student|staff|expenses)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*\\.(js|css|json|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot))",
+      "destination": "/$1"
     }
   ]
 }
