@@ -7,6 +7,14 @@ function Login({ onLoginSuccess }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const handleForceLogout = () => {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.clear()
+      setError('')
+      alert('Session cleared! Please login with new credentials.')
+    }
+  }
+
   // Hash function using Web Crypto API
   async function hashPassword(pass) {
     const encoder = new TextEncoder()
@@ -109,6 +117,10 @@ function Login({ onLoginSuccess }) {
 
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? 'Logging in...' : '🔐 Login'}
+          </button>
+
+          <button type="button" className="clear-session-btn" onClick={handleForceLogout} style={{marginTop: '10px', padding: '8px', background: '#dc3545', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px'}}>
+            Clear Session & Logout
           </button>
         </form>
 
