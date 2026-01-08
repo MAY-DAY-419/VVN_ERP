@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import Landing from './components/Landing'
 import Dashboard from './components/Dashboard'
 import AddStudent from './components/AddStudent'
 import ViewStudents from './components/ViewStudents'
@@ -19,6 +20,13 @@ function App() {
 
   // Check authentication on mount
   useEffect(() => {
+    // Only check auth if not on landing or login page
+    const path = window.location.pathname
+    if (path === '/' || path === '/login') {
+      setLoading(false)
+      return
+    }
+
     try {
       const token = localStorage.getItem('vvn_auth_token')
       const userId = localStorage.getItem('vvn_user_id')
@@ -42,7 +50,7 @@ function App() {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true)
-    navigate('/', { replace: true })
+    navigate('/dashboard', { replace: true })
   }
 
   const handleLogout = () => {
@@ -64,6 +72,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
       <Route 
         path="/*" 
@@ -85,7 +94,7 @@ function App() {
 
               <nav className="nav-buttons">
                 <Link 
-                  to="/" 
+                  to="/dashboard" 
                   className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
                   onClick={() => setActiveTab('dashboard')}
                 >
@@ -137,7 +146,7 @@ function App() {
 
               <main className="main-content">
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/add-student" element={<AddStudent />} />
                   <Route path="/view-students" element={<ViewStudents />} />
                   <Route path="/fee-detail" element={<FeeDetail />} />
