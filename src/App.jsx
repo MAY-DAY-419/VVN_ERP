@@ -30,11 +30,24 @@ function App() {
     try {
       const token = localStorage.getItem('vvn_auth_token')
       const userId = localStorage.getItem('vvn_user_id')
+      const loginTime = localStorage.getItem('vvn_login_time')
       
       console.log('Auth check - Token:', !!token, 'UserId:', !!userId)
       
-      if (token && userId) {
-        setIsAuthenticated(true)
+      // Check if session is expired (24 hours)
+      if (token && userId && loginTime) {
+        const loginDate = new Date(loginTime)
+        const now = new Date()
+        const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60)
+        
+        if (hoursSinceLogin > 24) {
+          // Session expired
+          localStorage.clear()
+          setIsAuthenticated(false)
+          navigate('/login', { replace: true })
+        } else {
+          setIsAuthenticated(true)
+        }
       } else {
         setIsAuthenticated(false)
         navigate('/login', { replace: true })
