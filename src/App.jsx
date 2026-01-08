@@ -74,6 +74,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+      <Route path="/app" element={<Login onLoginSuccess={handleLoginSuccess} />} />
       <Route 
         path="/*" 
         element={

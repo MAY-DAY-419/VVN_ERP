@@ -22,9 +22,9 @@ function Login({ onLoginSuccess }) {
     setLoading(true)
 
     try {
-      // Correct credentials
-      const correctId = 'admin'
-      const correctPassword = 'vvn@12345'
+      // Get credentials from environment variables
+      const correctId = import.meta.env.VITE_ADMIN_ID || 'admin'
+      const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'vvn@12345'
 
       // Validate
       if (id !== correctId) {
