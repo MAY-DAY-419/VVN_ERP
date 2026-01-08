@@ -1,10 +1,13 @@
 {
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/landing", "destination": "/landing.html" },
-    { "source": "/landing.html", "destination": "/landing.html" },
-    { "source": "/", "destination": "/landing.html" },
     {
-      "source": "/((?!assets/|logo.jpeg|manifest.json|service-worker.js|landing.html).*)",
+      "source": "/",
+      "destination": "/landing.html"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
