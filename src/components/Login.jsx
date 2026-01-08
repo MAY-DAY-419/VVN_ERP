@@ -22,9 +22,15 @@ function Login({ onLoginSuccess }) {
     setLoading(true)
 
     try {
-      // Get credentials from environment variables
-      const correctId = import.meta.env.VITE_ADMIN_ID || 'admin'
-      const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD || 'vvn@12345'
+      // Get credentials from environment variables (NO FALLBACK!)
+      const correctId = import.meta.env.VITE_ADMIN_ID
+      const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD
+
+      if (!correctId || !correctPassword) {
+        setError('❌ Admin credentials not configured. Contact administrator.')
+        setLoading(false)
+        return
+      }
 
       // Validate
       if (id !== correctId) {
