@@ -1,10 +1,11 @@
 {
   "rewrites": [
-    { "source": "/assets/(.*)", "destination": "/assets/$1" },
-    { "source": "/(.*\\.(js|css|json|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot))", "destination": "/$1" },
     { "source": "/landing", "destination": "/landing.html" },
     { "source": "/landing.html", "destination": "/landing.html" },
     { "source": "/", "destination": "/landing.html" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!assets/|logo.jpeg|manifest.json|service-worker.js|landing.html).*)",
+      "destination": "/index.html"
+    }
   ]
 }
