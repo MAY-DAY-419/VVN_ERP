@@ -8,6 +8,7 @@ import FeeDetail from './components/FeeDetail'
 import EditStudent from './components/EditStudent'
 import Staff from './components/Staff'
 import Expenses from './components/Expenses'
+import News from './components/News'
 import Login from './components/Login'
 import InstallPrompt from './components/InstallPrompt'
 import './App.css'
@@ -82,7 +83,7 @@ function App() {
     }
     setIsAuthenticated(false)
     setActiveTab('dashboard')
-    navigate('/login', { replace: true })
+    navigate('/', { replace: true })
   }
 
   if (loading) {
@@ -162,6 +163,13 @@ function App() {
                 >
                   💰 Expenses
                 </Link>
+                <Link 
+                  to="/news" 
+                  className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('news')}
+                >
+                  📢 News
+                </Link>
               </nav>
 
               <main className="main-content">
@@ -173,6 +181,7 @@ function App() {
                   <Route path="/edit-student" element={<EditStudent />} />
                   <Route path="/staff" element={<Staff />} />
                   <Route path="/expenses" element={<Expenses />} />
+                  <Route path="/news" element={<News />} />
                 </Routes>
               </main>
 

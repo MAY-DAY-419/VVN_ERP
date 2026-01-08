@@ -1,10 +1,37 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../supabaseClient'
 import '../styles/Landing.css'
 
 function Landing() {
   const navigate = useNavigate()
   const scrollRef = useRef(null)
+  const [newsItems, setNewsItems] = useState([])
+
+  useEffect(() => {
+    fetchNews()
+  }, [])
+
+  const fetchNews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('date', { ascending: false })
+        .limit(6)
+
+      if (error) throw error
+      setNewsItems(data || [])
+    } catch (error) {
+      console.error('Error fetching news:', error)
+      // Fallback to hardcoded news if database fails
+      setNewsItems([
+        { date: '06 Jan 2026', title: 'Annual Day Celebration', description: 'Join us for our grand annual day celebration on 15th January 2026.' },
+        { date: '05 Jan 2026', title: 'Winter Break Schedule', description: 'School will remain closed from 20th to 31st January for winter break.' },
+        { date: '03 Jan 2026', title: 'Parent-Teacher Meeting', description: 'PTM scheduled for all classes on 12th January 2026 from 9 AM to 3 PM.' },
+      ])
+    }
+  }
 
   useEffect(() => {
     const scrollContainer = scrollRef.current
@@ -21,15 +48,6 @@ function Landing() {
     const interval = setInterval(scroll, 50)
     return () => clearInterval(interval)
   }, [])
-
-  const newsItems = [
-    { date: '06 Jan 2026', title: 'Annual Day Celebration', description: 'Join us for our grand annual day celebration on 15th January 2026.' },
-    { date: '05 Jan 2026', title: 'Winter Break Schedule', description: 'School will remain closed from 20th to 31st January for winter break.' },
-    { date: '03 Jan 2026', title: 'Parent-Teacher Meeting', description: 'PTM scheduled for all classes on 12th January 2026 from 9 AM to 3 PM.' },
-    { date: '02 Jan 2026', title: 'Sports Day Announcement', description: 'Sports day events will be held on 18th January. All students must participate.' },
-    { date: '01 Jan 2026', title: 'New Semester Begins', description: 'Welcome back! New semester starts with fresh enthusiasm and new opportunities.' },
-    { date: '30 Dec 2025', title: 'Fee Submission Reminder', description: 'Please submit pending fees by 10th January to avoid late charges.' },
-  ]
 
   return (
     <div className="landing-container">
