@@ -1,7 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/landing.html"
+    },
+    {
+      "source": "/app(.*)",
       "destination": "/index.html"
     }
   ]
