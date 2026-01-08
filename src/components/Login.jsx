@@ -75,13 +75,6 @@ function Login({ onLoginSuccess }) {
 
   return (
     <div className="login-container">
-      {/* Watermark Background */}
-      <div className="watermark-bg">
-        <div className="watermark-logo">
-          <img src="/logo.jpeg" alt="VVN Logo" className="watermark-img" />
-        </div>
-      </div>
-
       <div className="login-box">
         <div className="login-header">
           <img src="/logo.jpeg" alt="VIPIN VIDHYA NIKETAN" className="login-logo" />
