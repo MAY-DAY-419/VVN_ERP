@@ -47,9 +47,11 @@ function Login({ onLoginSuccess }) {
 
       // Hash the password and store session
       const hashedPassword = await hashPassword(password)
-      localStorage.setItem('vvn_auth_token', hashedPassword)
-      localStorage.setItem('vvn_user_id', id)
-      localStorage.setItem('vvn_login_time', new Date().toISOString())
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('vvn_auth_token', hashedPassword)
+        localStorage.setItem('vvn_user_id', id)
+        localStorage.setItem('vvn_login_time', new Date().toISOString())
+      }
 
       setError('')
       setLoading(false)

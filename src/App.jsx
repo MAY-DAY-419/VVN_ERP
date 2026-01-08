@@ -28,6 +28,12 @@ function App() {
     }
 
     try {
+      // Check if running in browser
+      if (typeof window === 'undefined' || !window.localStorage) {
+        setLoading(false)
+        return
+      }
+
       const token = localStorage.getItem('vvn_auth_token')
       const userId = localStorage.getItem('vvn_user_id')
       const loginTime = localStorage.getItem('vvn_login_time')
@@ -68,9 +74,11 @@ function App() {
 
   const handleLogout = () => {
     try {
-      localStorage.removeItem('vvn_auth_token')
-      localStorage.removeItem('vvn_user_id')
-      localStorage.removeItem('vvn_login_time')
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.removeItem('vvn_auth_token')
+        localStorage.removeItem('vvn_user_id')
+        localStorage.removeItem('vvn_login_time')
+      }
     } catch (error) {
       console.error('Logout error:', error)
     }
