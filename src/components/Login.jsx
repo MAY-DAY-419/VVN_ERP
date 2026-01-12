@@ -104,7 +104,7 @@ function Login({ onLoginSuccess }) {
           {error && <div className="error-message">{error}</div>}
 
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Logging in...' : '🔐 Login'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

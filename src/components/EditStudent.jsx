@@ -85,7 +85,7 @@ function EditStudent() {
       const { data, error } = await supabase
         .from('students')
         .select('*')
-        .order('fullname', { ascending: true })
+        .order('id', { ascending: false })
 
       if (error) throw error
 
@@ -102,11 +102,12 @@ function EditStudent() {
     const term = e.target.value.toLowerCase()
     setSearchTerm(term)
 
-    const filtered = students.filter(student =>
-      student.fullname.toLowerCase().includes(term) ||
-      student.rollnumber.toLowerCase().includes(term) ||
-      (student.fathername && student.fathername.toLowerCase().includes(term))
-    )
+    const filtered = students.filter(student => {
+      const name = (student.studentfullname || student.fullname || '').toLowerCase()
+      const roll = (student.rollnumber || '').toLowerCase()
+      const father = (student.fathername || '').toLowerCase()
+      return name.includes(term) || roll.includes(term) || father.includes(term)
+    })
 
     setFilteredStudents(filtered)
   }
@@ -114,11 +115,11 @@ function EditStudent() {
   const openEditModal = (student) => {
     setSelectedStudent(student)
     setFormData({
-      fullname: student.fullname || '',
+      fullname: student.studentfullname || student.fullname || '',
       rollnumber: student.rollnumber || '',
       dob: student.dob || '',
       placeofbirth: student.placeofbirth || '',
-      gender: student.gender || '',
+      gender: (student.gender || '').toString().toLowerCase() === 'male' ? 'Male' : (student.gender || '').toLowerCase() === 'female' ? 'Female' : '',
       category: student.category || '',
       medium: student.medium || '',
       class: student.class || '',
@@ -126,7 +127,7 @@ function EditStudent() {
       fathername: student.fathername || '',
       mothername: student.mothername || '',
       parentname: student.parentname || '',
-      contactnumber: student.contactnumber || '',
+      contactnumber: student.fathermobile || student.contactnumber || '',
       emergencycontact: student.emergencycontact || '',
       address: student.address || '',
       village: student.village || '',
@@ -136,7 +137,7 @@ function EditStudent() {
       admissiontype: student.admissiontype || '',
       admissiondate: student.admissiondate || '',
       vanapplied: student.vanapplied || '',
-      vancharges: student.vancharges || '',
+      vancharges: '',
       fees: student.fees || 0,
       totalfees: student.totalfees || 0,
       feewaiver: student.feewaiver || 'No',
@@ -172,37 +173,22 @@ function EditStudent() {
       const cls = name === 'class' ? value : formData.class
       const med = name === 'medium' ? value : formData.medium
       const fees = getClassFees(med, cls)
-      const vanChargesNum = parseFloat(formData.vancharges || 0)
       const waiverAmt = parseFloat(formData.feewaiveramt || 0)
-      const baseFees = fees + (isNaN(vanChargesNum) ? 0 : vanChargesNum)
-      const totalfees = baseFees - (isNaN(waiverAmt) ? 0 : waiverAmt)
+      const totalfees = fees - (isNaN(waiverAmt) ? 0 : waiverAmt)
       setFormData(prev => ({ ...prev, fees, totalfees }))
       setDisplayedFees(fees)
     }
 
-    if (name === 'vanapplied' && value !== 'Yes') {
-      const totalfees = (formData.fees || 0)
-      setFormData(prev => ({ ...prev, vancharges: '', totalfees }))
-    }
-
-    if (name === 'vancharges') {
-      const vanChargesNum = parseFloat(value || 0)
-      const waiverAmt = parseFloat(formData.feewaiveramt || 0)
-      const baseFees = (formData.fees || 0) + (isNaN(vanChargesNum) ? 0 : vanChargesNum)
-      const totalfees = baseFees - (isNaN(waiverAmt) ? 0 : waiverAmt)
-      setFormData(prev => ({ ...prev, totalfees }))
-    }
-
     if (name === 'feewaiveramt') {
       const waiverAmt = parseFloat(value || 0)
-      const baseFees = (formData.fees || 0) + (formData.vancharges ? parseFloat(formData.vancharges) : 0)
+      const baseFees = (formData.fees || 0)
       const totalfees = baseFees - (isNaN(waiverAmt) ? 0 : waiverAmt)
       setFormData(prev => ({ ...prev, feewaiveramt: waiverAmt, totalfees }))
     }
 
     if (name === 'feewaiver') {
       if (value !== 'Yes') {
-        const baseFees = (formData.fees || 0) + (formData.vancharges ? parseFloat(formData.vancharges) : 0)
+        const baseFees = (formData.fees || 0)
         setFormData(prev => ({ ...prev, feewaiver: value, feewaiveramt: 0, totalfees: baseFees }))
       }
     }
@@ -225,42 +211,52 @@ function EditStudent() {
 
       delete dataToUpdate.otherVillage
 
+      // Only send columns that exist in the students table to avoid schema errors
+      const normalizeGender = (val) => {
+        const map = { boy: 'Boy', male: 'Boy', m: 'Boy', girl: 'Girl', female: 'Girl', f: 'Girl' }
+        return map[(val || '').toLowerCase()] || val
+      }
+      const normalizeCategory = (val) => {
+        const map = { general: 'General', obc: 'OBC', sc: 'SC', st: 'ST' }
+        return map[(val || '').toLowerCase()] || val
+      }
+
+      const allowedGender = ['Boy', 'Girl']
+      const allowedCategory = ['General', 'OBC', 'SC', 'ST']
+
       const dbRecord = {
-        fullname: dataToUpdate.fullname,
-        rollnumber: dataToUpdate.rollnumber,
+        studentfullname: dataToUpdate.fullname,
         dob: dataToUpdate.dob,
-        placeofbirth: dataToUpdate.placeofbirth,
-        gender: dataToUpdate.gender,
-        category: dataToUpdate.category,
-        medium: dataToUpdate.medium,
         class: dataToUpdate.class,
-        division: dataToUpdate.division,
         fathername: dataToUpdate.fathername || null,
         mothername: dataToUpdate.mothername || null,
-        parentname: dataToUpdate.parentname || null,
-        contactnumber: dataToUpdate.contactnumber,
-        emergencycontact: dataToUpdate.emergencycontact || null,
+        fathermobile: dataToUpdate.contactnumber || null,
+        mothermobile: dataToUpdate.mothermobile || null,
         address: dataToUpdate.address,
         village: dataToUpdate.village,
         state: dataToUpdate.state,
         district: dataToUpdate.district,
-        admissiontype: dataToUpdate.admissiontype,
         admissiondate: dataToUpdate.admissiondate,
-        vanapplied: dataToUpdate.vanapplied,
-        fees: dataToUpdate.fees,
-        vancharges: dataToUpdate.vancharges,
         totalfees: dataToUpdate.totalfees,
-        feewaiver: dataToUpdate.feewaiver,
-        feewaiveramt: dataToUpdate.feewaiveramt || 0
+        feewaiver: dataToUpdate.feewaiver
       }
 
-      // Convert empty enum/select fields to null (for CHECK constraints)
-      const enumFields = ['admissiontype', 'vanapplied', 'feewaiver', 'gender', 'category']
-      enumFields.forEach(field => {
-        if (dbRecord[field] === '') {
-          dbRecord[field] = null
+      // Apply safe enum updates only when provided
+      const genderFinal = dataToUpdate.gender ? normalizeGender(dataToUpdate.gender) : undefined
+      if (genderFinal) {
+        if (!allowedGender.includes(genderFinal)) {
+          throw new Error('Invalid gender. Use Boy or Girl.')
         }
-      })
+        dbRecord.gender = genderFinal
+      }
+
+      const categoryFinal = dataToUpdate.category ? normalizeCategory(dataToUpdate.category) : undefined
+      if (categoryFinal) {
+        if (!allowedCategory.includes(categoryFinal)) {
+          throw new Error('Invalid category. Use General, OBC, SC or ST.')
+        }
+        dbRecord.category = categoryFinal
+      }
 
       const { error } = await supabase
         .from('students')
@@ -274,6 +270,36 @@ function EditStudent() {
       setMessage({ type: 'success', text: '🎉 Student information updated successfully!' })
       setTimeout(() => setMessage(null), 3000)
 
+      closeEditModal()
+      loadStudents()
+    } catch (error) {
+      setMessage({ type: 'error', text: '❌ Error: ' + error.message })
+      setTimeout(() => setMessage(null), 5000)
+    }
+  }
+
+  const handleDelete = async (studentId) => {
+    if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      if (!supabaseReady) {
+        setMessage({ type: 'error', text: '❌ Supabase not configured' })
+        setTimeout(() => setMessage(null), 3000)
+        return
+      }
+
+      const { error } = await supabase
+        .from('students')
+        .delete()
+        .eq('id', studentId)
+
+      if (error) throw error
+
+      setMessage({ type: 'success', text: '✅ Student deleted successfully!' })
+      setTimeout(() => setMessage(null), 3000)
+      
       closeEditModal()
       loadStudents()
     } catch (error) {
@@ -320,19 +346,32 @@ function EditStudent() {
                 <th>Guardian</th>
                 <th>Contact</th>
                 <th>Village</th>
-                <th>Action</th>
+                <th>Total Fees</th>
+                <th>Paid</th>
+                <th>Progress</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredStudents.map(student => (
                 <tr key={student.id}>
-                  <td>{student.rollnumber}</td>
-                  <td>{student.fullname}</td>
-                  <td>{student.class} / {student.division}</td>
+                  <td>{student.rollnumber || '—'}</td>
+                  <td>{student.studentfullname || student.fullname || '—'}</td>
+                  <td>{student.class || '—'} / {student.division || '—'}</td>
                   <td>{student.fathername || student.mothername || '—'}</td>
-                  <td>{student.contactnumber}</td>
-                  <td>{student.village}</td>
+                  <td>{student.fathermobile || student.contactnumber || '—'}</td>
+                  <td>{student.village || '—'}</td>
+                  <td>₹{Number(student.totalfees || 0).toLocaleString()}</td>
+                  <td>₹{Number(student.feespaid || 0).toLocaleString()}</td>
                   <td>
+                    {(() => {
+                      const total = Number(student.totalfees || 0)
+                      const paid = Number(student.feespaid || 0)
+                      const pct = total > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0
+                      return <span style={{ fontWeight: 'bold', color: pct >= 100 ? '#2e7d32' : '#1976d2' }}>{pct}%</span>
+                    })()}
+                  </td>
+                  <td style={{ display: 'flex', gap: '8px' }}>
                     <button
                       onClick={() => openEditModal(student)}
                       style={{
@@ -348,6 +387,73 @@ function EditStudent() {
                     >
                       ✏️ Edit
                     </button>
+                    {(() => {
+                      const total = Number(student.totalfees || 0)
+                      const paid = Number(student.feespaid || 0)
+                      const isComplete = paid >= total && total > 0
+                      
+                      if (isComplete) return null
+                      
+                      return (
+                        <button
+                          onClick={async () => {
+                            const amtStr = window.prompt('Enter fees received (₹):', '0')
+                            if (amtStr === null) return
+                            const amount = Number(amtStr)
+                            if (isNaN(amount) || amount <= 0) {
+                              setMessage({ type: 'error', text: '❌ Enter a valid amount' })
+                              setTimeout(() => setMessage(null), 3000)
+                              return
+                            }
+                            try {
+                              if (!supabaseReady) {
+                                setMessage({ type: 'error', text: '❌ Supabase not configured' })
+                                setTimeout(() => setMessage(null), 3000)
+                                return
+                              }
+                              const currentPaid = Number(student.feespaid || 0)
+                              const total = Number(student.totalfees || 0)
+                              const newPaid = Math.min(total, currentPaid + amount)
+                              const { error } = await supabase
+                                .from('students')
+                                .update({ feespaid: newPaid })
+                                .eq('id', student.id)
+                              if (error) throw error
+                              // Log transaction in history
+                              const tx = {
+                                transactionDate: new Date().toISOString().split('T')[0],
+                                transactionType: 'Fee',
+                                amount: amount,
+                                paymentMode: null,
+                                description: `Fees received for ${student.studentfullname || student.fullname}`,
+                                reference: `StudentID:${student.id}`,
+                                studentId: student.id
+                              }
+                              const { error: txErr } = await supabase.from('transactions').insert([tx])
+                              if (txErr) console.warn('Transaction log error:', txErr.message)
+                              setMessage({ type: 'success', text: '✅ Fees updated successfully' })
+                              setTimeout(() => setMessage(null), 3000)
+                              loadStudents()
+                            } catch (err) {
+                              setMessage({ type: 'error', text: '❌ Error: ' + err.message })
+                              setTimeout(() => setMessage(null), 3000)
+                            }
+                          }}
+                          style={{
+                            padding: '6px 12px',
+                            backgroundColor: '#1976d2',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            fontSize: '0.9em'
+                          }}
+                        >
+                          💳 Fill Fees
+                        </button>
+                      )
+                    })()}
                   </td>
                 </tr>
               ))}
@@ -450,9 +556,8 @@ function EditStudent() {
                       required
                     >
                       <option value="">Select Gender</option>
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
+                      <option value="MALE">Male</option>
+                      <option value="FEMALE">Female</option>
                     </select>
                   </div>
                   <div className="form-group">
@@ -486,14 +591,14 @@ function EditStudent() {
                       ))}
                     </select>
                   </div>
+                  {/* Division not stored in DB, keep optional */}
                   <div className="form-group">
-                    <label>Division *</label>
+                    <label>Division</label>
                     <input
                       type="text"
                       name="division"
                       value={formData.division}
                       onChange={handleChange}
-                      required
                     />
                   </div>
                 </div>
@@ -622,12 +727,12 @@ function EditStudent() {
                 <h4>📅 Admission Information</h4>
                 <div className="form-row">
                   <div className="form-group">
-                    <label>Admission Type *</label>
+                    {/* Admission Type field not stored in DB; keep optional */}
+                    <label>Admission Type</label>
                     <select
                       name="admissiontype"
                       value={formData.admissiontype}
                       onChange={handleChange}
-                      required
                     >
                       <option value="">Select Type</option>
                       <option value="Regular">Regular</option>
@@ -766,11 +871,27 @@ function EditStudent() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => handleDelete(selectedStudent.id)}
+                  style={{
+                    flex: 1,
+                    padding: '10px',
+                    backgroundColor: '#ff5722',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  🗑️ Delete
+                </button>
+                <button
+                  type="button"
                   onClick={closeEditModal}
                   style={{
                     flex: 1,
                     padding: '10px',
-                    backgroundColor: '#f44336',
+                    backgroundColor: '#757575',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',

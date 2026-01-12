@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import Landing from './components/Landing'
 import Dashboard from './components/Dashboard'
-import AddStudent from './components/AddStudent'
+import AddStudentMultiStep from './components/AddStudentMultiStep'
 import ViewStudents from './components/ViewStudents'
 import FeeDetail from './components/FeeDetail'
 import EditStudent from './components/EditStudent'
 import Staff from './components/Staff'
 import Expenses from './components/Expenses'
+import PaymentHistory from './components/PaymentHistory'
 import News from './components/News'
 import Login from './components/Login'
 import InstallPrompt from './components/InstallPrompt'
@@ -17,6 +18,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [isNavOpen, setIsNavOpen] = useState(false)
   const navigate = useNavigate()
 
   // Check authentication on mount
@@ -105,82 +107,99 @@ function App() {
                   <div className="logo-container">
                     <img src="/logo.jpeg" alt="VVN Logo" className="logo" loading="lazy" />
                     <div>
-                      <h1>🎓 VIPIN VIDHYA NIKETAN</h1>
+                      <h1>VIPIN VIDHYA NIKETAN</h1>
                       <p>Student Management System</p>
                     </div>
                   </div>
-                  <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+                  <button className="logout-btn" onClick={handleLogout}>Logout</button>
                 </div>
               </header>
 
-              <nav className="nav-buttons">
+              <button className="hamburger-menu" onClick={() => setIsNavOpen(!isNavOpen)}>
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+
+              <nav className={`nav-buttons ${isNavOpen ? 'open' : ''}`}>
                 <Link 
                   to="/dashboard" 
                   className={`nav-btn ${activeTab === 'dashboard' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('dashboard')}
+                  onClick={() => { setActiveTab('dashboard'); setIsNavOpen(false); }}
                 >
-                  📊 Dashboard
+                  Dashboard
                 </Link>
                 <Link 
                   to="/add-student" 
                   className={`nav-btn ${activeTab === 'add' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('add')}
+                  onClick={() => { setActiveTab('add'); setIsNavOpen(false); }}
                 >
-                  ➕ Add Student
+                  Add Student
                 </Link>
                 <Link 
                   to="/view-students" 
                   className={`nav-btn ${activeTab === 'view' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('view')}
+                  onClick={() => { setActiveTab('view'); setIsNavOpen(false); }}
                 >
-                  👥 View Students
+                  View Students
                 </Link>
                 <Link 
                   to="/fee-detail" 
                   className={`nav-btn ${activeTab === 'fees' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('fees')}
+                  onClick={() => { setActiveTab('fees'); setIsNavOpen(false); }}
                 >
-                  💳 Fees Detail
+                  Fees Detail
                 </Link>
                 <Link 
                   to="/edit-student" 
                   className={`nav-btn ${activeTab === 'edit' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('edit')}
+                  onClick={() => { setActiveTab('edit'); setIsNavOpen(false); }}
                 >
-                  ✏️ Edit Student
+                  Edit Student
                 </Link>
                 <Link 
                   to="/staff" 
                   className={`nav-btn ${activeTab === 'staff' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('staff')}
+                  onClick={() => { setActiveTab('staff'); setIsNavOpen(false); }}
                 >
-                  👨‍💼 Staff
+                  Staff
                 </Link>
                 <Link 
                   to="/expenses" 
                   className={`nav-btn ${activeTab === 'expenses' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('expenses')}
+                  onClick={() => { setActiveTab('expenses'); setIsNavOpen(false); }}
                 >
-                  💰 Expenses
+                  Expenses
+                </Link>
+                <Link 
+                  to="/payment-history" 
+                  className={`nav-btn ${activeTab === 'payments' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('payments'); setIsNavOpen(false); }}
+                >
+                  Payment History
                 </Link>
                 <Link 
                   to="/news" 
                   className={`nav-btn ${activeTab === 'news' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('news')}
+                  onClick={() => { setActiveTab('news'); setIsNavOpen(false); }}
                 >
-                  📢 News
+                  News
                 </Link>
               </nav>
+
+              {/* Backdrop overlay for mobile menu */}
+              {isNavOpen && <div className="nav-backdrop" onClick={() => setIsNavOpen(false)}></div>}
 
               <main className="main-content">
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/add-student" element={<AddStudent />} />
+                  <Route path="/add-student" element={<AddStudentMultiStep />} />
                   <Route path="/view-students" element={<ViewStudents />} />
                   <Route path="/fee-detail" element={<FeeDetail />} />
                   <Route path="/edit-student" element={<EditStudent />} />
                   <Route path="/staff" element={<Staff />} />
                   <Route path="/expenses" element={<Expenses />} />
+                  <Route path="/payment-history" element={<PaymentHistory />} />
                   <Route path="/news" element={<News />} />
                 </Routes>
               </main>

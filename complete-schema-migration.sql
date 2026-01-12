@@ -50,15 +50,33 @@ CREATE TRIGGER update_expenses_updated_at
 -- STEP 2: ENSURE STUDENTS TABLE HAS ALL FEE COLUMNS
 -- ============================================================================
 
--- Add missing fee columns if they don't exist
 ALTER TABLE students ADD COLUMN IF NOT EXISTS classFees DECIMAL(10, 2) DEFAULT 0;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS vanFare DECIMAL(10, 2) DEFAULT 0;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS totalFees DECIMAL(10, 2) DEFAULT 0;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS feesPaid DECIMAL(10, 2) DEFAULT 0;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS feeWaiver TEXT DEFAULT 'No' CHECK (feeWaiver IN ('Yes', 'No'));
 ALTER TABLE students ADD COLUMN IF NOT EXISTS feeWaiverAmount DECIMAL(10, 2) DEFAULT 0;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS finalFees DECIMAL(10, 2) DEFAULT 0;
 ALTER TABLE students ADD COLUMN IF NOT EXISTS feeDetailsProvided TEXT DEFAULT 'Yes' CHECK (feeDetailsProvided IN ('Yes', 'No'));
 
+-- STEP 4: CREATE TRANSACTIONS LEDGER TABLE (UNIFIED HISTORY)
+CREATE TABLE IF NOT EXISTS transactions (
+    id BIGSERIAL PRIMARY KEY,
+    transactionDate DATE NOT NULL,
+    transactionType TEXT NOT NULL CHECK (transactionType IN ('Fee', 'Expense', 'Salary', 'Other')),
+    amount DECIMAL(12,2) NOT NULL,
+    paymentMode TEXT CHECK (paymentMode IN ('Cash', 'Online', 'Cheque', 'UPI')),
+    description TEXT,
+    reference TEXT,
+    studentId BIGINT,
+    expenseId BIGINT,
+    staffId BIGINT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(transactionDate);
+CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(transactionType);
+CREATE INDEX IF NOT EXISTS idx_transactions_student ON transactions(studentId);
 -- ============================================================================
 -- STEP 3: FIX ADMISSION TYPE CHECK CONSTRAINT
 -- ============================================================================

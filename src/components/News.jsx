@@ -161,25 +161,21 @@ function News() {
         ) : newsList.length === 0 ? (
           <p style={{ color: '#666' }}>No news items yet. Add one above!</p>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '15px' }}>
             {newsList.map((news) => (
-              <div key={news.id} style={{ border: '1px solid #e0e0e0', padding: '15px', borderRadius: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'inline-block', background: '#667eea', color: 'white', padding: '4px 10px', borderRadius: '4px', fontSize: '12px', marginBottom: '8px' }}>
-                      {news.date}
-                    </div>
-                    <h4 style={{ margin: '8px 0', color: '#333' }}>{news.title}</h4>
-                    <p style={{ margin: 0, color: '#666', lineHeight: '1.6' }}>{news.description}</p>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', marginLeft: '15px' }}>
-                    <button onClick={() => handleEdit(news)} style={{ padding: '6px 12px', background: '#2196F3', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '13px' }}>
-                      ✏️ Edit
-                    </button>
-                    <button onClick={() => handleDelete(news.id)} style={{ padding: '6px 12px', background: '#f44336', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '13px' }}>
-                      🗑️ Delete
-                    </button>
-                  </div>
+              <div key={news.id} style={{ border: '1px solid #e0e0e0', padding: '12px', borderRadius: '8px', display: 'flex', flexDirection: 'column', height: 'fit-content' }}>
+                <div style={{ display: 'inline-block', background: '#667eea', color: 'white', padding: '3px 8px', borderRadius: '4px', fontSize: '11px', marginBottom: '8px', width: 'fit-content' }}>
+                  {news.date}
+                </div>
+                <h4 style={{ margin: '0 0 8px 0', color: '#333', fontSize: '15px', lineHeight: '1.3' }}>{news.title}</h4>
+                <p style={{ margin: '0 0 12px 0', color: '#666', fontSize: '13px', lineHeight: '1.5', flex: 1 }}>{news.description}</p>
+                <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
+                  <button onClick={() => handleEdit(news)} style={{ flex: 1, padding: '6px 10px', background: '#2196F3', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px' }}>
+                    ✏️ Edit
+                  </button>
+                  <button onClick={() => handleDelete(news.id)} style={{ flex: 1, padding: '6px 10px', background: '#f44336', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '12px' }}>
+                    🗑️ Delete
+                  </button>
                 </div>
               </div>
             ))}

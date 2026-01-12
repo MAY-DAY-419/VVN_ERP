@@ -4,9 +4,15 @@ import { supabase, supabaseReady } from '../supabaseClient'
 function Dashboard() {
   const [stats, setStats] = useState({
     totalStudents: 0,
+    schoolStudents: 0,
     regularStudents: 0,
-    tuitionStudents: 0
+    tuitionStudents: 0,
+    totalFees: 0,
+    paidFees: 0,
+    unpaidFees: 0,
+    feePercentage: 0
   })
+  const [staffList, setStaffList] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -20,25 +26,51 @@ function Dashboard() {
         setLoading(false)
         return
       }
-      const { data: students, error } = await supabase
+      
+      // Load students
+      const { data: students, error: studentsError } = await supabase
         .from('students')
         .select('*')
 
-      if (error) throw error
+      if (studentsError) throw studentsError
 
-      // Calculate stats
-      const total = students.length
-      
-      // Count regular students
-      const regular = students.filter(s => s.admissiontype === 'Regular').length
-      
-      // Count tuition students
-      const tuition = students.filter(s => s.admissiontype === 'Tuition').length
+      // Calculate student stats
+      const total = students?.length || 0
+      const regular = students?.filter(s => s.admissiontype === 'Regular').length || 0
+      const tuition = students?.filter(s => s.admissiontype === 'Tuition' || s.admissiontype === 'Tution').length || 0
+      const school = regular // School students are regular students
+
+      // Calculate fees from transactions
+      const { data: transactions, error: transactionsError } = await supabase
+        .from('transactions')
+        .select('amount')
+        .eq('transactionType', 'Fee')
+
+      const paidFees = transactions?.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0) || 0
+
+      // Calculate total expected fees (example: 10000 per student per year)
+      const expectedFeePerStudent = 10000
+      const totalExpectedFees = total * expectedFeePerStudent
+      const unpaidFees = totalExpectedFees - paidFees
+      const feePercentage = totalExpectedFees > 0 ? (paidFees / totalExpectedFees) * 100 : 0
+
+      // Load staff members
+      const { data: staff, error: staffError } = await supabase
+        .from('staff')
+        .select('name, position, post')
+        .order('name', { ascending: true })
+
+      setStaffList(staff || [])
 
       setStats({
         totalStudents: total,
+        schoolStudents: school,
         regularStudents: regular,
-        tuitionStudents: tuition
+        tuitionStudents: tuition,
+        totalFees: totalExpectedFees,
+        paidFees: paidFees,
+        unpaidFees: unpaidFees,
+        feePercentage: feePercentage
       })
       
       setLoading(false)
@@ -54,20 +86,95 @@ function Dashboard() {
 
   return (
     <div className="container">
-      <h2 style={{ marginBottom: '30px', color: '#333' }}>📊 Dashboard Overview</h2>
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>{stats.totalStudents}</h3>
-          <p>Total Students</p>
+      <h2 style={{ marginBottom: '30px', color: '#1e293b', fontWeight: '700' }}>Dashboard Overview</h2>
+      
+      {/* Student Statistics */}
+      <div className="dashboard-section">
+        <h3 className="section-title">Student Statistics</h3>
+        <div className="stats-grid-dashboard">
+          <div className="stat-card-flat">
+            <div className="stat-number">{stats.totalStudents}</div>
+            <div className="stat-label">Total Students</div>
+          </div>
+          <div className="stat-card-flat">
+            <div className="stat-number">{stats.schoolStudents}</div>
+            <div className="stat-label">School Students</div>
+          </div>
+          <div className="stat-card-flat">
+            <div className="stat-number">{stats.regularStudents}</div>
+            <div className="stat-label">Regular Students</div>
+          </div>
+          <div className="stat-card-flat">
+            <div className="stat-number">{stats.tuitionStudents}</div>
+            <div className="stat-label">Tuition Students</div>
+          </div>
         </div>
-        <div className="stat-card">
-          <h3>{stats.regularStudents}</h3>
-          <p>Regular Students</p>
+      </div>
+
+      {/* Fee Collection Progress */}
+      <div className="dashboard-section">
+        <h3 className="section-title">Fee Collection Progress</h3>
+        <div className="fee-progress-container">
+          <div className="circular-progress-wrapper">
+            <svg className="circular-progress" viewBox="0 0 200 200">
+              <circle
+                className="circular-progress-bg"
+                cx="100"
+                cy="100"
+                r="85"
+              />
+              <circle
+                className="circular-progress-fill"
+                cx="100"
+                cy="100"
+                r="85"
+                style={{
+                  strokeDasharray: `${2 * Math.PI * 85}`,
+                  strokeDashoffset: `${2 * Math.PI * 85 * (1 - stats.feePercentage / 100)}`
+                }}
+              />
+              <text x="100" y="95" className="progress-percentage">
+                {stats.feePercentage.toFixed(1)}%
+              </text>
+              <text x="100" y="115" className="progress-label">
+                Collected
+              </text>
+            </svg>
+          </div>
+          <div className="fee-details">
+            <div className="fee-item">
+              <span className="fee-label">Total Expected:</span>
+              <span className="fee-value">₹{stats.totalFees.toLocaleString()}</span>
+            </div>
+            <div className="fee-item">
+              <span className="fee-label">Fees Paid:</span>
+              <span className="fee-value fee-paid">₹{stats.paidFees.toLocaleString()}</span>
+            </div>
+            <div className="fee-item">
+              <span className="fee-label">Fees Pending:</span>
+              <span className="fee-value fee-unpaid">₹{stats.unpaidFees.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
-        <div className="stat-card">
-          <h3>{stats.tuitionStudents}</h3>
-          <p>Tuition Students</p>
-        </div>
+      </div>
+
+      {/* Staff Members */}
+      <div className="dashboard-section">
+        <h3 className="section-title">Staff Members</h3>
+        {staffList.length > 0 ? (
+          <div className="staff-list">
+            {staffList.map((staff, index) => (
+              <div key={index} className="staff-item">
+                <div className="staff-name">{staff.name}</div>
+                <div className="staff-position">
+                  {staff.position || staff.post || 'Staff Member'}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="no-data">No staff members added yet</div>
+        )}
       </div>
     </div>
   )

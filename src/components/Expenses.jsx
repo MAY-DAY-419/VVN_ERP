@@ -97,6 +97,23 @@ function Expenses() {
 
       if (error) throw error
 
+      // Log transaction in history
+      try {
+        const tx = {
+          transactionDate: dataToSubmit.expenseDate,
+          transactionType: 'Expense',
+          amount: dataToSubmit.amount || 0,
+          paymentMode: dataToSubmit.paymentMode || null,
+          description: dataToSubmit.expenseDescription,
+          reference: dataToSubmit.paidTo ? `PaidTo:${dataToSubmit.paidTo}` : `Category:${dataToSubmit.expenseCategory}`,
+          expenseId: null
+        }
+        const { error: txErr } = await supabase.from('transactions').insert([tx])
+        if (txErr) console.warn('Transaction log error:', txErr.message)
+      } catch (logErr) {
+        console.warn('Transaction log failed:', logErr?.message || logErr)
+      }
+
       setMessage({ type: 'success', text: '✅ Expense added successfully!' })
       setShowForm(false)
       
