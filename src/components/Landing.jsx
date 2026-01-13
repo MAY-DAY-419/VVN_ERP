@@ -7,6 +7,13 @@ function Landing() {
   const navigate = useNavigate()
   const scrollRef = useRef(null)
   const [newsItems, setNewsItems] = useState([])
+  const [studentName, setStudentName] = useState('')
+  const [studentVillage, setStudentVillage] = useState('')
+  const whatsappNumber = '919770895862' // WhatsApp number including country code
+  const whatsappMessage = encodeURIComponent(
+    `Hello! I would like to enquire about admissions and fees.\nStudent Name: ${studentName || '____'}\nVillage: ${studentVillage || '____'}`
+  )
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`
 
   useEffect(() => {
     fetchNews()
@@ -132,7 +139,7 @@ function Landing() {
       </main>
 
       {/* Footer with Contact Information */}
-      <footer className="landing-footer">
+      <footer className="landing-footer" id="contact">
         <div className="footer-content">
           <div className="footer-section">
             <h3>📍 Address</h3>
@@ -146,6 +153,28 @@ function Landing() {
           
           <div className="footer-section">
             <h3>📞 Contact Us</h3>
+            <div className="contact-form">
+              <label className="contact-label">
+                Student Name
+                <input
+                  type="text"
+                  className="contact-input"
+                  placeholder="Enter student name"
+                  value={studentName}
+                  onChange={(e) => setStudentName(e.target.value)}
+                />
+              </label>
+              <label className="contact-label">
+                Village
+                <input
+                  type="text"
+                  className="contact-input"
+                  placeholder="Enter village"
+                  value={studentVillage}
+                  onChange={(e) => setStudentVillage(e.target.value)}
+                />
+              </label>
+            </div>
             <div className="contact-box">
               <a href="tel:9770895862" className="contact-phone">
                 <span className="phone-icon">☎️</span>
@@ -154,6 +183,10 @@ function Landing() {
               <a href="tel:+919669885998" className="contact-phone">
                 <span className="phone-icon">📱</span>
                 <span>+91 96698 85998</span>
+              </a>
+              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="contact-whatsapp">
+                <span className="phone-icon">💬</span>
+                <span>Message us for enquiry</span>
               </a>
             </div>
           </div>
@@ -174,7 +207,7 @@ function Landing() {
               Instagram
             </a>
             <a 
-              href="https://chat.whatsapp.com/HbELH25wHNF1JQJu5APjAg" 
+              href={whatsappLink}
               target="_blank" 
               rel="noopener noreferrer"
               className="footer-whatsapp"
