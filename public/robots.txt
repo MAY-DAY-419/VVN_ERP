@@ -1,0 +1,6 @@
+# robots.txt for VVN ERP System
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://vvn-erp.vercel.app/sitemap.xml
