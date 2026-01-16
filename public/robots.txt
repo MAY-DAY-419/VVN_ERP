@@ -3,4 +3,4 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://vvn-erp.vercel.app/sitemap.xml
+Sitemap: https://vvnschool.vercel.app/sitemap.xml
