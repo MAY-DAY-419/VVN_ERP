@@ -1,4 +1,4 @@
-# robots.txt for VVN ERP System
+# robots.txt for VIPIN VIDHYA NIKETAN School
 User-agent: *
 Allow: /
 
