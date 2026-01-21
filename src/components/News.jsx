@@ -11,6 +11,29 @@ function News() {
     description: ''
   })
 
+  // Helper function to format date as DD - MONTH - YEAR
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    const day = String(date.getDate()).padStart(2, '0')
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const month = monthNames[date.getMonth()]
+    const year = date.getFullYear()
+    return `${day} - ${month} - ${year}`
+  }
+
+  // Helper function to convert display format back to date for editing
+  const getDateFromDisplay = (displayString) => {
+    if (!displayString) return ''
+    const parts = displayString.split(' - ')
+    if (parts.length !== 3) return displayString
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const day = parts[0]
+    const month = monthNames.indexOf(parts[1]) + 1
+    const year = parts[2]
+    return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+  }
+
   useEffect(() => {
     fetchNews()
   }, [])
@@ -37,11 +60,18 @@ function News() {
     e.preventDefault()
     
     try {
+      // Convert date to display format before saving
+      const formattedDate = formatDateDisplay(formData.date)
+      const dataToSave = {
+        ...formData,
+        date: formattedDate
+      }
+
       if (editingId) {
         // Update existing news
         const { error } = await supabase
           .from('news')
-          .update(formData)
+          .update(dataToSave)
           .eq('id', editingId)
 
         if (error) throw error
@@ -50,7 +80,7 @@ function News() {
         // Add new news
         const { error } = await supabase
           .from('news')
-          .insert([formData])
+          .insert([dataToSave])
 
         if (error) throw error
         alert('News added successfully!')
@@ -67,12 +97,19 @@ function News() {
 
   const handleEdit = (news) => {
     setEditingId(news.id)
+    // Convert display format back to date format for editing
+    const dateValue = getDateFromDisplay(news.date)
     setFormData({
-      date: news.date,
+      date: dateValue,
       title: news.title,
       description: news.description
     })
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const handleDateChange = (e) => {
+    const dateValue = e.target.value
+    setFormData({ ...formData, date: dateValue })
   }
 
   const handleDelete = async (id) => {
@@ -108,13 +145,17 @@ function News() {
           <div>
             <label style={{ display: 'block', marginBottom: '5px', fontWeight: '500' }}>Date</label>
             <input
-              type="text"
-              placeholder="e.g., 08 Jan 2026"
+              type="date"
               value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+              onChange={handleDateChange}
               required
               style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}
             />
+            {formData.date && (
+              <div style={{ marginTop: '8px', padding: '8px', background: '#f5f5f5', borderRadius: '4px', fontSize: '14px', color: '#333', fontWeight: '500' }}>
+                Display Format: {formatDateDisplay(formData.date)}
+              </div>
+            )}
           </div>
           
           <div>

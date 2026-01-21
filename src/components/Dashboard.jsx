@@ -4,7 +4,6 @@ import { supabase, supabaseReady } from '../supabaseClient'
 function Dashboard() {
   const [stats, setStats] = useState({
     totalStudents: 0,
-    schoolStudents: 0,
     regularStudents: 0,
     tuitionStudents: 0,
     totalFees: 0,
@@ -38,7 +37,6 @@ function Dashboard() {
       const total = students?.length || 0
       const regular = students?.filter(s => s.admissiontype === 'Regular').length || 0
       const tuition = students?.filter(s => s.admissiontype === 'Tuition' || s.admissiontype === 'Tution').length || 0
-      const school = regular // School students are regular students
 
       // Calculate fees from transactions
       const { data: transactions, error: transactionsError } = await supabase
@@ -48,9 +46,12 @@ function Dashboard() {
 
       const paidFees = transactions?.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0) || 0
 
-      // Calculate total expected fees (example: 10000 per student per year)
-      const expectedFeePerStudent = 10000
-      const totalExpectedFees = total * expectedFeePerStudent
+      // Get total expected fees from feedetail table
+      const { data: feeDetails, error: feeError } = await supabase
+        .from('feedetail')
+        .select('totalfees')
+
+      const totalExpectedFees = feeDetails?.reduce((sum, f) => sum + parseFloat(f.totalfees || 0), 0) || (total * 10000)
       const unpaidFees = totalExpectedFees - paidFees
       const feePercentage = totalExpectedFees > 0 ? (paidFees / totalExpectedFees) * 100 : 0
 
@@ -64,7 +65,6 @@ function Dashboard() {
 
       setStats({
         totalStudents: total,
-        schoolStudents: school,
         regularStudents: regular,
         tuitionStudents: tuition,
         totalFees: totalExpectedFees,
@@ -95,10 +95,6 @@ function Dashboard() {
           <div className="stat-card-flat">
             <div className="stat-number">{stats.totalStudents}</div>
             <div className="stat-label">Total Students</div>
-          </div>
-          <div className="stat-card-flat">
-            <div className="stat-number">{stats.schoolStudents}</div>
-            <div className="stat-label">School Students</div>
           </div>
           <div className="stat-card-flat">
             <div className="stat-number">{stats.regularStudents}</div>
