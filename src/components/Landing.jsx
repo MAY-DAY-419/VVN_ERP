@@ -128,7 +128,7 @@ function Landing() {
           {/* About Section */}
           <div className="about-section">
             <div className="about-image">
-              <img src="/Assets/school01.jpeg" alt="School Building" />
+              <img src="/school01.jpeg" alt="School Building" />
             </div>
             <div className="about-text">
               <h2>About Our School</h2>
@@ -169,7 +169,7 @@ function Landing() {
             </div>
             <div className="tribute-content-landing">
               <div className="tribute-image-small">
-                <img src="/Assets/chacha.png" alt="Vipin Dantare" />
+                <img src="/chacha.png" alt="Vipin Dantare" />
               </div>
               <div className="tribute-details">
                 <div className="motto-display">

@@ -23,7 +23,7 @@ function InMemory() {
           <div className="tribute-image-wrapper">
             <div className="tribute-image-frame">
               <img 
-                src="/Assets/chacha.png" 
+                src="/chacha.png" 
                 alt="Vipin Dantare" 
                 className="tribute-image"
               />
