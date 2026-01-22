@@ -96,7 +96,7 @@ function Landing() {
           <a href="#about" className="nav-link">About Us</a>
           <a href="#media" className="nav-link">Media</a>
           <a href="#contact" className="nav-link">Contact Us</a>
-          <a href="#admin" className="nav-link">Administration</a>
+          <a href="#team" className="nav-link">Admission</a>
           <a 
             href="https://www.instagram.com/vvnschool_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
             target="_blank" 
@@ -119,36 +119,72 @@ function Landing() {
 
       {/* Main Content */}
       <main className="landing-main">
-        <div className="hero-section">
-          <h1>Welcome to Vipin Vidhya Niketan</h1>
-          <p className="hero-subtitle">Shaping Future Leaders</p>
+        {/* Hero Section */}
+        <div className="hero-section" id="home">
+          <div className="hero-background">
+            <img src="/school01.jpeg" alt="School" className="hero-bg-image" />
+            <div className="hero-overlay"></div>
+          </div>
+          <div className="hero-content">
+            <h1>Welcome to Vipin Vidhya Niketan</h1>
+            <p className="hero-subtitle">Shaping Future Leaders</p>
+            <p className="hero-description">Fostering Excellence in Education Since Our Inception</p>
+            <button className="hero-cta" onClick={handleEnquiryClick}>Start Your Journey</button>
+          </div>
         </div>
 
         <div className="content-wrapper">
           {/* About Section */}
-          <div className="about-section">
+          <section className="about-section" id="about">
             <div className="about-image">
               <img src="/school01.jpeg" alt="School Building" />
             </div>
             <div className="about-text">
-              <h2>About Our School</h2>
+              <h2>About Vipin Vidhya Niketan</h2>
               <p>
-                Vipin Vidhya Niketan stands as a beacon of educational excellence, dedicated to nurturing young minds 
-                and shaping future leaders. Established with a vision to provide quality education, we have been 
-                serving the community for years with commitment and passion.
+                Vipin Vidhya Niketan stands as a beacon of educational excellence in the heart of Madhya Pradesh. 
+                Established with a vision to provide quality education, we have been serving the community with unwavering 
+                commitment and passion for years.
               </p>
               <p>
-                With experienced faculty, modern facilities, and a student-centric approach, we ensure that each child 
-                receives personalized attention and guidance. Join us in our journey to create responsible citizens 
-                and tomorrow's leaders.
+                Our institution is dedicated to nurturing young minds and shaping responsible citizens who will lead 
+                tomorrow. With a perfect blend of traditional values and modern pedagogy, we create an environment where 
+                every child can discover their potential and excel.
+              </p>
+              <p>
+                We believe in holistic development - combining academic excellence with character building, creativity, 
+                and critical thinking skills that prepare students for the challenges of the modern world.
               </p>
             </div>
-          </div>
+          </section>
+
+          {/* Why Join Us Section */}
+          <section className="why-join-section">
+            <h2>Why Choose Vipin Vidhya Niketan?</h2>
+            <div className="reasons-grid">
+              <div className="reason-card">
+                <div className="reason-icon">🎓</div>
+                <h3>Academic Excellence</h3>
+                <p>Rigorous curriculum coupled with experienced educators ensuring top-notch quality of education and consistent results.</p>
+              </div>
+              <div className="reason-card">
+                <div className="reason-icon">👥</div>
+                <h3>Personalized Attention</h3>
+                <p>Small class sizes and individual mentoring ensure every student receives the guidance they deserve for optimal growth.</p>
+              </div>
+              <div className="reason-card">
+                <div className="reason-icon">�</div>
+                <h3>Holistic Development</h3>
+                <p>Beyond academics - we focus on character building, co-curricular activities, arts, and sports for overall personality development.</p>
+              </div>
+
+            </div>
+          </section>
 
           {/* News & Announcements Box */}
           {newsItems.length > 0 && (
-            <div className="news-section">
-              <h3 className="news-header">📢 News</h3>
+            <section className="news-section">
+              <h3 className="news-header">📢 Latest News & Announcements</h3>
               <div className="news-scroll" ref={scrollRef}>
                 {newsItems.map((item, index) => (
                   <div key={index} className="news-item">
@@ -158,11 +194,28 @@ function Landing() {
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
+          {/* Call to Action Section */}
+          <section className="cta-section">
+            <div className="cta-content">
+              <div className="cta-text">
+                <h2>Ready to Join Our School Family?</h2>
+                <p>Start your child's journey towards excellence and success</p>
+                <div className="cta-buttons">
+                  <button className="cta-btn primary-btn" onClick={handleEnquiryClick}>Inquire Now</button>
+                  <button className="cta-btn secondary-btn" onClick={() => window.open('https://www.instagram.com/vvnschool_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', '_blank')}>Follow Us</button>
+                </div>
+              </div>
+              <div className="cta-image">
+                <img src="/school04.jpeg" alt="Teacher with Student" />
+              </div>
+            </div>
+          </section>
+
           {/* Tribute Section */}
-          <div className="tribute-section-landing">
+          <section className="tribute-section-landing">
             <div className="tribute-header">
               <h2>In Loving Memory of Vipin Dantare</h2>
               <p className="tribute-subtitle">Founder & Visionary - 1982 to 2024</p>
@@ -183,7 +236,7 @@ function Landing() {
                 </p>
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
 
