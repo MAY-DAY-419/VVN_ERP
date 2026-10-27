@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { verifySession, clearSession } from './auth'
 import Landing from './components/Landing'
 import Dashboard from './components/Dashboard'
 import AddStudentMultiStep from './components/AddStudentMultiStep'
@@ -30,42 +31,25 @@ function App() {
       return
     }
 
-    try {
-      // Check if running in browser
-      if (typeof window === 'undefined' || !window.localStorage) {
-        setLoading(false)
-        return
-      }
-
-      const token = localStorage.getItem('vvn_auth_token')
-      const userId = localStorage.getItem('vvn_user_id')
-      const loginTime = localStorage.getItem('vvn_login_time')
-      
-      // Check if session exists and is valid
-      if (token && userId && loginTime) {
-        const loginDate = new Date(loginTime)
-        const now = new Date()
-        const hoursSinceLogin = (now - loginDate) / (1000 * 60 * 60)
-        
-        // Session expires after 24 hours
-        if (hoursSinceLogin > 24) {
-          localStorage.clear()
+    const checkAuth = async () => {
+      try {
+        const isValid = await verifySession()
+        if (isValid) {
+          setIsAuthenticated(true)
+        } else {
           setIsAuthenticated(false)
           navigate('/login', { replace: true })
-        } else {
-          setIsAuthenticated(true)
         }
-      } else {
+      } catch (error) {
+        console.error('Auth check error:', error)
         setIsAuthenticated(false)
         navigate('/login', { replace: true })
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('Auth check error:', error)
-      setIsAuthenticated(false)
-      navigate('/login', { replace: true })
-    } finally {
-      setLoading(false)
     }
+
+    checkAuth()
   }, [navigate])
 
   const handleLoginSuccess = () => {
@@ -73,16 +57,8 @@ function App() {
     navigate('/dashboard', { replace: true })
   }
 
-  const handleLogout = () => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.removeItem('vvn_auth_token')
-        localStorage.removeItem('vvn_user_id')
-        localStorage.removeItem('vvn_login_time')
-      }
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
+  const handleLogout = async () => {
+    await clearSession()
     setIsAuthenticated(false)
     setActiveTab('dashboard')
     navigate('/', { replace: true })

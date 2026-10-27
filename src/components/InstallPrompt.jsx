@@ -45,7 +45,7 @@ function InstallPrompt() {
   return (
     <div style={styles.container}>
       <div style={styles.content}>
-        <img src="/Assets/logo.jpeg" alt="VVN" style={styles.logo} />
+        <img src="/logo.jpeg" alt="VVN" style={styles.logo} />
         <div style={styles.text}>
           <h3 style={styles.title}>Install VVN ERP App</h3>
           <p style={styles.description}>

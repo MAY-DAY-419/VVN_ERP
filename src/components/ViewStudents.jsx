@@ -21,7 +21,7 @@ function ViewStudents() {
         Village: s.village || '',
         Mobile: s.fathermobile || s.contactnumber || '',
         Class: s.class || '',
-        Medium: s.medium || '',
+        Medium: s.mediumofstudy || s.medium || '',
         TotalFees: s.totalfees || 0,
         FeesPaid: s.feespaid || 0
       }))
@@ -61,7 +61,8 @@ function ViewStudents() {
     const filtered = students.filter(student => {
       const name = (student.studentfullname || student.fullname || '').toLowerCase()
       const vill = (student.village || '').toLowerCase()
-      return name.includes(term) || vill.includes(term)
+      const roll = (student.rollnumber || '').toLowerCase()
+      return name.includes(term) || vill.includes(term) || roll.includes(term)
     })
 
     setFilteredStudents(filtered)

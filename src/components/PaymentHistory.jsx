@@ -40,11 +40,15 @@ function PaymentHistory() {
     }
   }
 
+  const getTxType = (t) => t.transactiontype || t.transactionType || ''
+  const getTxDate = (t) => t.transactiondate || t.transactionDate || ''
+  const getTxMode = (t) => t.paymentmode || t.paymentMode || '—'
+
   const applyFilters = (list, type, term, periodSel) => {
     let result = [...list]
 
     if (type !== 'all') {
-      result = result.filter(t => t.transactionType === type)
+      result = result.filter(t => getTxType(t) === type)
     }
 
     if (term) {
@@ -52,8 +56,8 @@ function PaymentHistory() {
       result = result.filter(t => (
         (t.description || '').toLowerCase().includes(q) ||
         (t.reference || '').toLowerCase().includes(q) ||
-        (String(t.studentId || '')).includes(q) ||
-        (String(t.expenseId || '')).includes(q)
+        (String(t.studentid || t.studentId || '')).includes(q) ||
+        (String(t.expenseid || t.expenseId || '')).includes(q)
       ))
     }
 
@@ -62,12 +66,18 @@ function PaymentHistory() {
       const y = now.getFullYear()
       const m = now.getMonth()
       result = result.filter(t => {
-        const d = new Date(t.transactionDate)
+        const dStr = getTxDate(t)
+        if (!dStr) return false
+        const d = new Date(dStr)
         return d.getFullYear() === y && d.getMonth() === m
       })
     } else if (periodSel === 'year') {
       const y = now.getFullYear()
-      result = result.filter(t => (new Date(t.transactionDate)).getFullYear() === y)
+      result = result.filter(t => {
+        const dStr = getTxDate(t)
+        if (!dStr) return false
+        return (new Date(dStr)).getFullYear() === y
+      })
     }
 
     setFiltered(result)
@@ -80,9 +90,9 @@ function PaymentHistory() {
   }
 
   const totals = {
-    fees: filtered.filter(t => t.transactionType === 'Fee').reduce((s, t) => s + Number(t.amount || 0), 0),
-    expenses: filtered.filter(t => t.transactionType === 'Expense').reduce((s, t) => s + Number(t.amount || 0), 0),
-    salary: filtered.filter(t => t.transactionType === 'Salary').reduce((s, t) => s + Number(t.amount || 0), 0),
+    fees: filtered.filter(t => getTxType(t) === 'Fee').reduce((s, t) => s + Number(t.amount || 0), 0),
+    expenses: filtered.filter(t => getTxType(t) === 'Expense').reduce((s, t) => s + Number(t.amount || 0), 0),
+    salary: filtered.filter(t => getTxType(t) === 'Salary').reduce((s, t) => s + Number(t.amount || 0), 0),
     all: filtered.reduce((s, t) => s + Number(t.amount || 0), 0)
   }
 
@@ -151,10 +161,10 @@ function PaymentHistory() {
             <tbody>
               {filtered.map(tx => (
                 <tr key={tx.id}>
-                  <td>{new Date(tx.transactionDate).toLocaleDateString()}</td>
-                  <td>{tx.transactionType}</td>
+                  <td>{getTxDate(tx) ? new Date(getTxDate(tx)).toLocaleDateString() : '—'}</td>
+                  <td>{getTxType(tx)}</td>
                   <td>₹{Number(tx.amount || 0).toLocaleString()}</td>
-                  <td>{tx.paymentMode || '—'}</td>
+                  <td>{getTxMode(tx)}</td>
                   <td>{tx.description || '—'}</td>
                   <td>{tx.reference || '—'}</td>
                 </tr>

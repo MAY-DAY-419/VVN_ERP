@@ -38,30 +38,36 @@ function Dashboard() {
       const regular = students?.filter(s => s.admissiontype === 'Regular').length || 0
       const tuition = students?.filter(s => s.admissiontype === 'Tuition' || s.admissiontype === 'Tution').length || 0
 
-      // Calculate fees from transactions
-      const { data: transactions, error: transactionsError } = await supabase
-        .from('transactions')
-        .select('amount')
-        .eq('transactionType', 'Fee')
+      // Calculate fees from students and transactions
+      let paidFees = 0
+      try {
+        const { data: txData } = await supabase.from('transactions').select('*')
+        if (txData && txData.length > 0) {
+          paidFees = txData
+            .filter(t => (t.transactiontype || t.transactionType) === 'Fee')
+            .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0)
+        } else {
+          paidFees = students?.reduce((sum, s) => sum + parseFloat(s.feespaid || 0), 0) || 0
+        }
+      } catch {
+        paidFees = students?.reduce((sum, s) => sum + parseFloat(s.feespaid || 0), 0) || 0
+      }
 
-      const paidFees = transactions?.reduce((sum, t) => sum + parseFloat(t.amount || 0), 0) || 0
-
-      // Get total expected fees from feedetail table
-      const { data: feeDetails, error: feeError } = await supabase
-        .from('feedetail')
-        .select('totalfees')
-
-      const totalExpectedFees = feeDetails?.reduce((sum, f) => sum + parseFloat(f.totalfees || 0), 0) || (total * 10000)
-      const unpaidFees = totalExpectedFees - paidFees
+      // Total expected fees calculated directly from students table
+      const totalExpectedFees = students?.reduce((sum, s) => sum + parseFloat(s.totalfees || s.finalfees || 0), 0) || 0
+      const unpaidFees = Math.max(0, totalExpectedFees - paidFees)
       const feePercentage = totalExpectedFees > 0 ? (paidFees / totalExpectedFees) * 100 : 0
 
-      // Load staff members
-      const { data: staff, error: staffError } = await supabase
-        .from('staff')
-        .select('name, position, post')
-        .order('name', { ascending: true })
-
-      setStaffList(staff || [])
+      // Load staff members safely
+      try {
+        const { data: staff } = await supabase
+          .from('staff')
+          .select('name, position, post')
+          .order('name', { ascending: true })
+        setStaffList(staff || [])
+      } catch {
+        setStaffList([])
+      }
 
       setStats({
         totalStudents: total,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { attemptLogin, clearSession } from '../auth'
 import '../styles/Login.css'
 
 function Login({ onLoginSuccess }) {
@@ -9,11 +10,7 @@ function Login({ onLoginSuccess }) {
 
   // Clear any existing sessions on component mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.removeItem('vvn_auth_token')
-      localStorage.removeItem('vvn_user_id')
-      localStorage.removeItem('vvn_login_time')
-    }
+    clearSession()
   }, [])
 
   const handleSubmit = async (e) => {
@@ -22,45 +19,19 @@ function Login({ onLoginSuccess }) {
     setLoading(true)
 
     try {
-      // Get credentials from environment variables ONLY
-      const correctId = import.meta.env.VITE_ADMIN_ID
-      const correctPassword = import.meta.env.VITE_ADMIN_PASSWORD
+      const result = await attemptLogin(id, password)
 
-      console.log('Auth attempt:', { hasEnvId: !!correctId, hasEnvPass: !!correctPassword })
-
-      if (!correctId || !correctPassword) {
-        setError('❌ System error: Credentials not configured')
+      if (!result.success) {
+        setError(`❌ ${result.error}`)
         setLoading(false)
         return
-      }
-
-      // Direct comparison - no hashing
-      if (id.trim() !== correctId.trim()) {
-        setError('❌ Invalid ID')
-        setLoading(false)
-        return
-      }
-
-      if (password !== correctPassword) {
-        setError('❌ Invalid Password')
-        setLoading(false)
-        return
-      }
-
-      // Create new session token
-      const sessionToken = `vvn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
-      if (typeof window !== 'undefined' && window.localStorage) {
-        localStorage.setItem('vvn_auth_token', sessionToken)
-        localStorage.setItem('vvn_user_id', id)
-        localStorage.setItem('vvn_login_time', new Date().toISOString())
       }
 
       setError('')
       setLoading(false)
       onLoginSuccess()
     } catch (err) {
-      setError('❌ Login error: ' + err.message)
+      setError('❌ Login error: ' + (err?.message || 'Authentication failed'))
       setLoading(false)
     }
   }

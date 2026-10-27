@@ -3,7 +3,7 @@ const CACHE_NAME = 'vvn-erp-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/Assets/logo.jpeg'
+  '/logo.jpeg'
 ];
 
 // Install event - cache resources

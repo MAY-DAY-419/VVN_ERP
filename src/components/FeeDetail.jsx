@@ -71,7 +71,8 @@ function FeeDetail() {
       filtered = filtered.filter(s => {
         const name = (s.studentfullname || s.fullname || '').toLowerCase()
         const father = (s.fathername || '').toLowerCase()
-        return name.includes(term) || father.includes(term)
+        const roll = (s.rollnumber || '').toLowerCase()
+        return name.includes(term) || father.includes(term) || roll.includes(term)
       })
     }
 
@@ -280,7 +281,7 @@ function FeeDetail() {
       {/* Students Table */}
       {filteredStudents.length === 0 ? (
         <p style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-          {activeTab === 'pending' ? 'All fees have been collected!' : 'No students with pending fees.'}
+          {activeTab === 'pending' ? 'All fees have been collected!' : 'No students with completed fees.'}
         </p>
       ) : (
         <div style={{ overflowX: 'auto' }}>
@@ -303,7 +304,7 @@ function FeeDetail() {
                 return (
                   <tr key={student.id}>
                     <td>{student.rollnumber || '—'}</td>
-                    <td>{student.fullname}</td>
+                    <td>{student.studentfullname || student.fullname || '—'}</td>
                     <td>{student.class}</td>
                     <td>{student.fathername || student.mothername || '—'}</td>
                     <td>₹{Number(student.totalfees || 0).toLocaleString()}</td>

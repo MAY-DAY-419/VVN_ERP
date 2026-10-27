@@ -5,9 +5,8 @@ A complete student management system built with Supabase backend for educational
 ## ✨ Features
 
 ### 🔐 Admin Authentication
-- Secure login with hashed passwords
-- Admin ID: `AdminVVN`
-- Password: `VVN@2025#`
+- Secure login configured via environment variables
+- Set `VITE_ADMIN_ID` and `VITE_ADMIN_PASSWORD` in `.env` / `.env.local`
 
 ### 📝 Student Management
 - Add new students with comprehensive details
@@ -57,10 +56,9 @@ Simply open `index.html` in your web browser. That's it!
 ## 🎯 Usage Guide
 
 ### Login
-1. Open the application
-2. Enter Admin ID: `AdminVVN`
-3. Enter Password: `VVN@2025#`
-4. Click "Login"
+1. Open the application (`/login`)
+2. Enter your configured Admin ID and Password
+3. Click "Login"
 
 ### Adding Students
 1. Click "➕ Add Student" from the navigation

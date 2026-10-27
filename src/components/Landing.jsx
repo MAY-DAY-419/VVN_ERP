@@ -94,9 +94,8 @@ function Landing() {
         <nav className="landing-nav">
           <a href="#home" className="nav-link active">Home</a>
           <a href="#about" className="nav-link">About Us</a>
-          <a href="#media" className="nav-link">Media</a>
+          <a href="#news" className="nav-link">Announcements</a>
           <a href="#contact" className="nav-link">Contact Us</a>
-          <a href="#team" className="nav-link">Admission</a>
           <a 
             href="https://www.instagram.com/vvnschool_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
             target="_blank" 
@@ -173,7 +172,7 @@ function Landing() {
                 <p>Small class sizes and individual mentoring ensure every student receives the guidance they deserve for optimal growth.</p>
               </div>
               <div className="reason-card">
-                <div className="reason-icon">�</div>
+                <div className="reason-icon">🌱</div>
                 <h3>Holistic Development</h3>
                 <p>Beyond academics - we focus on character building, co-curricular activities, arts, and sports for overall personality development.</p>
               </div>
@@ -183,7 +182,7 @@ function Landing() {
 
           {/* News & Announcements Box */}
           {newsItems.length > 0 && (
-            <section className="news-section">
+            <section className="news-section" id="news">
               <h3 className="news-header">📢 Latest News & Announcements</h3>
               <div className="news-scroll" ref={scrollRef}>
                 {newsItems.map((item, index) => (
@@ -214,29 +213,7 @@ function Landing() {
             </div>
           </section>
 
-          {/* Tribute Section */}
-          <section className="tribute-section-landing">
-            <div className="tribute-header">
-              <h2>In Loving Memory of Vipin Dantare</h2>
-              <p className="tribute-subtitle">Founder & Visionary - 1982 to 2024</p>
-            </div>
-            <div className="tribute-content-landing">
-              <div className="tribute-image-small">
-                <img src="/chacha.png" alt="Vipin Dantare" />
-              </div>
-              <div className="tribute-details">
-                <div className="motto-display">
-                  <p>"Visionary Businessman, Architect of Excellence, Advocate for Education"</p>
-                </div>
-                <p className="tribute-bio">
-                  Vipin Dantare was a visionary businessman who transformed his success into a legacy of 
-                  education. With a profound belief in the power of learning, he established Vipin Vidhya 
-                  Niketan to provide quality education and opportunity to every child. His dedication to 
-                  community service and commitment to excellence continue to inspire us every single day.
-                </p>
-              </div>
-            </div>
-          </section>
+
         </div>
       </main>
 
